@@ -612,75 +612,67 @@ export default function VolsPasChers() {
       {/* --- NOUVELLE MODALE FILTRES MOBILE (lg:hidden) --- */}
       {showMobileFilters && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 animate-in fade-in duration-300 lg:hidden">
-          <div className="w-full max-w-lg bg-white rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl animate-in zoom-in-95 duration-300 max-h-[95vh]">
+          {/* On réduit la taille max à 80vh pour être sûr que ça passe au-dessus de la barre Safari/Chrome */}
+          <div className="w-full max-w-lg bg-white rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl animate-in zoom-in-95 duration-300 max-h-[80vh]">
             
-            {/* Bouton Fermer */}
             <button 
               onClick={() => setShowMobileFilters(false)}
-              className="absolute top-5 right-5 z-20 bg-slate-100 text-slate-500 rounded-full p-2.5 hover:bg-slate-200 transition-colors"
+              className="absolute top-4 right-4 z-20 bg-slate-100 text-slate-500 rounded-full p-2.5 hover:bg-slate-200 transition-colors"
             >
               <X size={20} />
             </button>
 
-            {/* Header Modale */}
-            <div className="bg-slate-50 p-7 md:p-8 text-center relative border-b border-slate-100 shrink-0">
-              <Zap size={32} className="text-blue-600 mx-auto mb-3" />
+            <div className="bg-slate-50 p-6 text-center relative border-b border-slate-100 shrink-0">
+              <Zap size={28} className="text-blue-600 mx-auto mb-2" />
               <h2 className="text-xl font-black text-slate-900 mb-1 tracking-tight">Filtres du Radar</h2>
-              <p className="text-slate-500 text-xs font-medium px-4 leading-relaxed">Ajustez votre recherche précisément.</p>
             </div>
 
-            {/* Contenu (Scrollable) */}
-            <div className="p-7 md:p-8 overflow-y-auto custom-scrollbar space-y-9 flex-grow">
-              
-              {/* 1. Aéroport (Exact copy-paste logic) */}
+            <div className="p-6 overflow-y-auto custom-scrollbar space-y-8 flex-grow">
               <div>
-                <label className="text-[10px] md:text-xs font-bold text-slate-900 mb-4 block uppercase tracking-widest">Aéroport de départ</label>
-                <select value={departure} onChange={(e) => setDeparture(e.target.value)} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 md:p-4 text-xs font-bold outline-none focus:border-blue-500">
+                <label className="text-[10px] font-bold text-slate-900 mb-3 block uppercase tracking-widest">Aéroport de départ</label>
+                <select value={departure} onChange={(e) => setDeparture(e.target.value)} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs font-bold outline-none focus:border-blue-500 appearance-none">
                   <option value="all">Tous les départs FR</option>
                   <option value="PAR">Paris</option><option value="LYS">Lyon</option><option value="NCE">Nice</option><option value="MRS">Marseille</option><option value="TLS">Toulouse</option><option value="BOD">Bordeaux</option><option value="GVA">Genève</option><option value="BRU">Bruxelles</option>
                 </select>
               </div>
               
-              {/* 2. Région (Exact copy-paste logic) */}
               <div>
-                <label className="text-[10px] md:text-xs font-bold text-slate-900 mb-4 block uppercase tracking-widest">Région</label>
-                <select value={activeRegion} onChange={(e) => setActiveRegion(e.target.value)} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 md:p-4 text-xs font-bold outline-none focus:border-blue-500">
+                <label className="text-[10px] font-bold text-slate-900 mb-3 block uppercase tracking-widest">Région</label>
+                <select value={activeRegion} onChange={(e) => setActiveRegion(e.target.value)} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs font-bold outline-none focus:border-blue-500 appearance-none">
                   <option value="all">Monde Entier</option>
                   <option value="asie">Asie & Océanie</option><option value="ameriques">Amériques</option><option value="afrique">Afrique & Océan Indien</option><option value="europe_sud">Europe du Sud</option><option value="europe_nord">Europe du Nord</option>
                 </select>
               </div>
 
-              {/* 3. Budget (Exact copy-paste logic) */}
               <div>
-                 <div className="flex justify-between items-center mb-4">
-                  <label className="text-[10px] md:text-xs font-bold text-slate-900 uppercase tracking-widest">Budget Max</label>
-                  <span className="text-blue-600 font-black text-base md:text-lg">{budget}€</span>
+                 <div className="flex justify-between items-center mb-3">
+                  <label className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Budget Max</label>
+                  <span className="text-blue-600 font-black text-lg">{budget}€</span>
                  </div>
-                 <input type="range" min="100" max="2000" step="50" value={budget} onChange={(e) => setBudget(Number(e.target.value))} className="w-full h-1 md:h-1.5 bg-slate-100 rounded-lg appearance-none accent-blue-600 cursor-pointer" />
+                 <input type="range" min="100" max="2000" step="50" value={budget} onChange={(e) => setBudget(Number(e.target.value))} className="w-full h-2 bg-slate-100 rounded-lg appearance-none accent-blue-600 cursor-pointer" />
               </div>
 
-              {/* 4. Type de Deal (Exact copy-paste logic) */}
               <div>
-                <label className="text-[10px] md:text-xs font-bold text-slate-900 mb-6 block uppercase tracking-widest leading-loose">Type de Deal</label>
-                <div className="space-y-6">
+                <label className="text-[10px] font-bold text-slate-900 mb-4 block uppercase tracking-widest">Type de Deal</label>
+                <div className="space-y-5">
                   {[['good', 'Bon Plan (Dès -15%)', 'bg-yellow-400'], ['super', 'Super Deal (Dès -25%)', 'bg-green-500'], ['rare', 'Erreur de Prix (Dès -50%)', 'bg-orange-600']].map(([key, label, color]) => (
                     <label key={key} className="flex items-center justify-between cursor-pointer group">
-                      <div className="flex items-center gap-3.5">
-                        <input type="checkbox" checked={dealFilters[key]} onChange={() => setDealFilters({...dealFilters, [key]: !dealFilters[key]})} className="w-5 h-5 md:w-4 md:h-4 rounded-lg border-slate-200 text-blue-600 focus:ring-0 cursor-pointer" />
-                        <span className="text-xs md:text-sm font-bold text-slate-500 group-hover:text-slate-900 transition-colors whitespace-nowrap">{label}</span>
+                      <div className="flex items-center gap-3">
+                        <input type="checkbox" checked={dealFilters[key]} onChange={() => setDealFilters({...dealFilters, [key]: !dealFilters[key]})} className="w-5 h-5 rounded-md border-slate-300 text-blue-600 focus:ring-0 cursor-pointer" />
+                        <span className="text-sm font-bold text-slate-600">{label}</span>
                       </div>
-                      <div className={`w-2 h-2 md:w-2 md:h-2 rounded-full shrink-0 ml-4 ${color}`}></div>
+                      <div className={`w-3 h-3 rounded-full shrink-0 ml-4 ${color}`}></div>
                     </label>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Bouton Appliquer (Sticky footer) */}
-            <div className="mt-auto p-7 md:p-8 border-t border-slate-100 bg-white sticky bottom-0 z-10">
+            {/* Le fameux bouton fixé avec shrink-0 pour ne jamais être écrasé */}
+            <div className="p-6 border-t border-slate-100 bg-white shrink-0">
               <button 
                 onClick={() => setShowMobileFilters(false)}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4.5 rounded-2xl transition-all uppercase tracking-widest text-xs shadow-lg shadow-blue-600/20"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl transition-all uppercase tracking-widest text-xs shadow-lg shadow-blue-600/20"
               >
                 Appliquer les filtres
               </button>
@@ -688,7 +680,3 @@ export default function VolsPasChers() {
           </div>
         </div>
       )}
-
-    </div>
-  );
-}
