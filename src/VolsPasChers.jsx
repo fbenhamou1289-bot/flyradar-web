@@ -42,6 +42,10 @@ export default function VolsPasChers() {
   const [isGoldUser, setIsGoldUser] = useState(false);
   const [showVipModal, setShowVipModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  
+  // -- NOUVEL ÉTAT POUR MOBILE --
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+  
   const [vipAirports, setVipAirports] = useState([]);
   
   const availableAirports = [
@@ -130,7 +134,6 @@ export default function VolsPasChers() {
     }
   }, [location]);
 
-  // --- LE BLOC DE CHARGEMENT MODIFIÉ ---
   useEffect(() => {
     async function fetchDeals() {
       try {
@@ -281,52 +284,52 @@ export default function VolsPasChers() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC] font-sans antialiased text-slate-900">
+    <div className="flex min-h-screen bg-[#F8FAFC] font-sans antialiased text-slate-900 overflow-x-hidden">
       
       {/* HEADER */}
-      <header className="fixed top-0 left-0 right-0 h-20 px-8 flex items-center justify-between z-50 bg-white/90 backdrop-blur-xl border-b border-slate-100">
+      <header className="fixed top-0 left-0 right-0 h-20 px-4 md:px-8 flex items-center justify-between z-50 bg-white/90 backdrop-blur-xl border-b border-slate-100">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.location.href="/"}>
-            <Target className="text-blue-600" size={24} strokeWidth={2.5} />
-            <span className="text-xl font-bold tracking-tight">Fly<span className="text-blue-600">Radar</span></span>
+            <Target className="text-blue-600 shrink-0" size={24} strokeWidth={2.5} />
+            <span className="text-xl font-bold tracking-tight">Fly<span className="text-blue-600 shrink-0">Radar</span></span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>
+          <div className="hidden md:flex items-center gap-2">
+            <span className="relative flex h-2 w-2 shrink-0"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>
             <span className="text-[9px] font-black uppercase tracking-widest text-green-600">Live</span>
           </div>
         </div>
         
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3 lg:gap-6">
           <button onClick={() => navigate('/aide')} className="hidden lg:flex items-center gap-1.5 text-[10px] font-black text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-[0.2em] border-b border-transparent hover:border-slate-200 pb-1">
             <HelpCircle size={14} className="text-slate-300" /> Aide
           </button>
 
           <button 
             onClick={handleLogout} 
-            className="text-[10px] font-black text-slate-400 hover:text-red-500 transition-colors uppercase tracking-[0.2em] border-b border-transparent hover:border-red-200 pb-1"
+            className="text-[10px] font-black text-slate-400 hover:text-red-500 transition-colors uppercase tracking-[0.2em] border-b border-transparent hover:border-red-200 pb-1 whitespace-nowrap"
           >
-            {isGoldUser ? "Déconnexion" : "Quitter le radar"}
+            {isGoldUser ? "Déconnexion" : "Quitter"}
           </button>
           
           {!isGoldUser ? (
             <button 
               onClick={() => navigate('/inscription-gold')} 
-              className="bg-amber-500 text-white font-bold px-5 py-2 rounded-full flex items-center gap-2 text-xs shadow-sm hover:bg-amber-400 transition-colors"
+              className="bg-amber-500 text-white font-bold px-3 py-2 rounded-full flex items-center gap-1.5 text-[11px] shadow-sm hover:bg-amber-400 transition-colors"
             >
               <Crown size={14} /> Go Gold
             </button>
           ) : (
             <button 
             onClick={() => setShowVipModal(true)}
-              className="bg-slate-900 text-amber-400 font-bold px-5 py-2 rounded-full flex items-center gap-2 text-xs shadow-sm hover:bg-slate-800 transition-colors border border-amber-500/30"
+              className="bg-slate-900 text-amber-400 font-bold px-3 py-2 rounded-full flex items-center gap-1.5 text-[11px] shadow-sm hover:bg-slate-800 transition-colors border border-amber-500/30"
             >
-              <Crown size={14} /> Mes Alertes VIP
+              <Crown size={14} /> Alertes VIP
             </button>
           )}
         </div>
       </header>
 
-      {/* SIDEBAR */}
+      {/* SIDEBAR (Visible lg+) */}
       <aside className="w-80 fixed left-0 top-20 bottom-0 bg-white border-r border-slate-50 p-10 overflow-y-auto hidden lg:block z-40">
         <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-12">Filtres de recherche</h3>
         <div className="space-y-10">
@@ -360,7 +363,7 @@ export default function VolsPasChers() {
                     <input type="checkbox" checked={dealFilters[key]} onChange={() => setDealFilters({...dealFilters, [key]: !dealFilters[key]})} className="w-4 h-4 rounded border-slate-200 text-blue-600 focus:ring-0 cursor-pointer" />
                     <span className="text-xs font-bold text-slate-500 group-hover:text-slate-900 transition-colors">{label}</span>
                   </div>
-                  <div className={`w-2 h-2 rounded-full ${color}`}></div>
+                  <div className={`w-2 h-2 rounded-full shrink-0 ${color}`}></div>
                 </label>
               ))}
             </div>
@@ -369,11 +372,11 @@ export default function VolsPasChers() {
       </aside>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 lg:ml-80 mt-20 p-8 md:p-16">
+      <main className="flex-1 lg:ml-80 mt-20 p-6 md:p-16">
         <div className="max-w-6xl mx-auto">
           
           <div className="mb-12 text-left">
-            <h1 className="text-4xl font-bold text-slate-900 tracking-tight mb-4">Les dernières <span className="text-blue-600">pépites</span> détectées par nos agents.</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight mb-4">Les dernières <span className="text-blue-600">pépites</span> détectées par nos agents.</h1>
             <div className="flex items-center gap-2 text-green-600 font-bold text-[10px] uppercase tracking-[0.2em] mb-8">{lastUpdateTxt}</div>
             
             <div className="relative max-w-xl">
@@ -387,6 +390,16 @@ export default function VolsPasChers() {
               />
             </div>
           </div>
+          
+          {/* BOUTON FILTRES MOBILE (Visible <lg) */}
+          <div className="lg:hidden mb-10 flex justify-end">
+            <button 
+              onClick={() => setShowMobileFilters(true)}
+              className="bg-slate-900 text-white px-5 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg hover:bg-slate-800 transition-colors"
+            >
+              <Zap size={14} className="text-blue-500 shrink-0" /> Filtres {departure !== 'all' || activeRegion !== 'all' || budget < 2000 || Object.values(dealFilters).includes(false) ? '(Actifs)' : ''}
+            </button>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredDeals.map((deal) => {
@@ -398,7 +411,7 @@ export default function VolsPasChers() {
                 <div key={deal.id} className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm flex flex-col h-full group hover:shadow-md transition-all relative">
                   
                   {isLocked && (
-                    <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-900/40 backdrop-blur-md">
+                    <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 text-center">
                       
                       {isRareLocked ? (
                         <div className="border-[3px] border-red-500 text-red-500 font-black text-2xl px-5 py-1.5 rotate-[-12deg] uppercase rounded-xl bg-white shadow-2xl mb-5">ERREUR</div>
@@ -415,7 +428,7 @@ export default function VolsPasChers() {
                   )}
 
                   <div className={`flex flex-col h-full ${isLocked ? 'blur-md select-none opacity-40 grayscale-[30%]' : ''}`}>
-                    <div className="relative h-48 overflow-hidden bg-slate-100">
+                    <div className="relative h-48 overflow-hidden bg-slate-100 shrink-0">
                       <div className={`absolute top-4 left-4 px-3 py-1.5 rounded-lg font-black text-[8px] uppercase tracking-widest shadow-md z-10 ${getBadgeStyle(deal.dealType)}`}>{getBadgeLabel(deal.dealType)}</div>
                       <div className={`absolute top-4 right-4 px-3 py-1.5 rounded-lg font-black text-[10px] shadow-md z-10 ${getBadgeStyle(deal.dealType)}`}>-{deal.discount}%</div>
                       
@@ -427,12 +440,12 @@ export default function VolsPasChers() {
                       />
                     </div>
                     
-                    <div className="p-6 flex flex-col flex-1">
+                    <div className="p-6 md:p-8 flex flex-col flex-1">
                       <div className="mb-4">
-                        <h3 className="font-extrabold text-slate-900 text-2xl tracking-tight mb-1">{deal.destination}</h3>
+                        <h3 className="font-extrabold text-slate-900 text-2xl md:text-2xl tracking-tight mb-1">{deal.destination}</h3>
                         <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">
                           <span>{deal.origine_code}</span>
-                          <div className="w-6 h-[1px] bg-slate-200"></div>
+                          <div className="w-6 h-[1px] bg-slate-200 shrink-0"></div>
                           <span>{deal.destination_code}</span>
                         </div>
                       </div>
@@ -441,27 +454,27 @@ export default function VolsPasChers() {
                         {deal.fullAirlineName} {(deal.stops > 0 && deal.stops !== null) ? '+ AUTRES' : ''}
                       </p>
                       
-                      <div className="flex items-center gap-4 mb-5 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                        <div className="flex items-center gap-1.5"><Calendar size={12} className="text-blue-500"/> {deal.count_dates} dates dispos</div>
-                        <div className="flex items-center gap-1.5">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-5 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                        <div className="flex items-center gap-1.5 whitespace-nowrap"><Calendar size={12} className="text-blue-500 shrink-0"/> {deal.count_dates} dates dispos</div>
+                        <div className="flex items-center gap-1.5 whitespace-nowrap">
                           {deal.stops === null ? '' : (deal.stops == 0 || deal.stops === '0' ? 'Vol Direct' : `${deal.stops} Escale(s)`)}
                         </div>
                       </div>
                       
-                      <div className="flex flex-col mb-6">
+                      <div className="flex flex-col mb-6 mt-auto">
                         <div className="flex items-baseline gap-2">
-                          <span className="font-black text-slate-900 text-3xl tracking-tighter">{deal.price}€</span>
-                          <span className="text-[10px] text-slate-400 font-bold">vs <span className="line-through text-slate-700">{deal.average_price}€</span></span>
+                          <span className="font-black text-slate-900 text-3xl md:text-4xl tracking-tighter">{deal.price}€</span>
+                          <span className="text-[10px] text-slate-400 font-bold whitespace-nowrap">vs <span className="line-through text-slate-700">{deal.average_price}€</span></span>
                         </div>
-                        <div className="mt-2 flex justify-end items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest w-full">
-                          <Target size={12} className="text-blue-600" />
+                        <div className="mt-2.5 flex justify-end items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest w-full">
+                          <Target size={12} className="text-blue-600 shrink-0" />
                           <span className="text-slate-500">Score :</span>
                           <span className="text-slate-900 font-black">{deal.deal_score}<span className="text-slate-400 font-normal">/10</span></span>
                         </div>
                       </div>
 
-                      <div className="mt-auto pt-4 border-t border-slate-50">
-                         <button onClick={() => setSelectedDeal(deal)} className="w-full bg-slate-900 hover:bg-blue-700 text-white shadow-lg font-bold py-3.5 rounded-xl transition-colors text-[10px] uppercase tracking-widest">Voir les dates</button>
+                      <div className="mt-auto pt-5 border-t border-slate-100">
+                         <button onClick={() => setSelectedDeal(deal)} className="w-full bg-slate-900 hover:bg-blue-700 text-white shadow-lg font-bold py-3.5 md:py-4 rounded-xl transition-all text-[10px] uppercase tracking-widest hover:-translate-y-0.5">Voir les dates</button>
                       </div>
                     </div>
                   </div>
@@ -472,49 +485,49 @@ export default function VolsPasChers() {
         </div>
       </main>
 
-      {/* MODALE DÉTAILS */}
+      {/* MODALE DÉTAILS OFFRE */}
       {selectedDeal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
           <div className="w-full max-w-2xl bg-slate-50 rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl animate-in zoom-in-95 duration-300 max-h-[90vh]">
             <button onClick={() => setSelectedDeal(null)} className="absolute top-4 right-4 z-20 bg-black/40 text-white rounded-full p-2 hover:bg-black transition-colors">
               <X size={20} />
             </button>
-            <div className="h-48 relative shrink-0">
+            <div className="h-40 md:h-48 relative shrink-0">
               <img src={selectedDeal.image} className="w-full h-full object-cover" alt={selectedDeal.destination} />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
-              <div className="absolute bottom-6 left-8">
-                <h3 className="font-black text-white text-3xl tracking-tight mb-1">{selectedDeal.destination}</h3>
+              <div className="absolute bottom-5 left-6 md:bottom-6 md:left-8">
+                <h3 className="font-black text-white text-2xl md:text-3xl tracking-tight mb-1">{selectedDeal.destination}</h3>
                 <p className="text-blue-300 text-xs font-bold uppercase tracking-widest">Toutes les dates disponibles</p>
               </div>
             </div>
-            <div className="p-8 overflow-y-auto">
+            <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar">
               <div className="space-y-4">
                 {selectedDeal.all_flights.sort((a, b) => a.price - b.price).map((flight, idx) => (
                   <div key={flight.id || idx} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-blue-200 transition-colors group">
                     <div className="flex flex-col">
-                    <span className="font-bold text-slate-900 text-[15px] sm:text-lg block">
+                    <span className="font-bold text-slate-900 text-[14px] sm:text-lg block">
                       {flight.return_date ? (
                         <>Du <span className="text-blue-600">{new Date(flight.dates).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span> au <span className="text-blue-600">{new Date(flight.return_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</span></>
                       ) : (
                         <>Aller Simple ➔ <span className="text-blue-600">{new Date(flight.dates).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</span></>
                       )}
                     </span>
-                      <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 py-1 bg-slate-50 rounded-md">
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-2">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 py-0.5 bg-slate-50 rounded-md whitespace-nowrap">
                         {AIRLINE_MAP[flight.airline] || flight.airline} {(flight.stops > 0 && flight.stops !== null) ? '+ autres' : ''}
                       </span>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">
                           {flight.stops === null ? '' : (flight.stops == 0 || flight.stops === '0' ? 'Vol Direct' : `${flight.stops} escale(s)`)}
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
+                    <div className="flex items-center gap-5 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 border-slate-100 pt-4 sm:pt-0">
                       <div className="flex flex-col text-right">
                         <span className="font-black text-2xl text-blue-600">{flight.price}€</span>
                       </div>
                       <button 
                         onClick={() => window.open(flight.booking_url, '_blank')} 
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all text-[10px] uppercase tracking-widest shadow-md hover:shadow-xl hover:-translate-y-0.5"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl transition-all text-[10px] uppercase tracking-widest shadow-md hover:-translate-y-0.5 hover:shadow-xl"
                       >
                         Réserver
                       </button>
@@ -527,45 +540,45 @@ export default function VolsPasChers() {
         </div>
       )}
 
-    {/* MODALE VIP */}
+    {/* MODALE VIP ALERTES */}
     {showVipModal && (
-        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative">
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
+          <div className="bg-white rounded-[2.5rem] w-full max-w-md overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300">
             <button 
               onClick={() => setShowVipModal(false)}
-              className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors z-10"
+              className="absolute top-5 right-5 p-2 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors z-10"
             >
               <X size={20} className="text-slate-600" />
             </button>
-            <div className="bg-slate-900 p-6 text-center relative overflow-hidden">
+            <div className="bg-slate-900 p-8 text-center relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500"></div>
               <Crown size={32} className="text-amber-400 mx-auto mb-3" />
-              <h2 className="text-2xl font-black text-white mb-1">Centre de Contrôle</h2>
-              <p className="text-amber-200/80 text-sm">Gérez vos alertes aéroports en illimité</p>
+              <h2 className="text-2xl font-black text-white mb-1 tracking-tight">Centre de Contrôle</h2>
+              <p className="text-amber-200/80 text-sm font-medium">Gérez vos alertes aéroports en illimité</p>
             </div>
-            <div className="p-6">
-              <p className="text-slate-600 text-sm mb-6 text-center">
+            <div className="p-8">
+              <p className="text-slate-600 text-sm mb-7 text-center font-medium leading-relaxed px-2">
                 Cochez les aéroports pour lesquels vous souhaitez recevoir des alertes d'erreurs de prix en temps réel.
               </p>
-              <div className="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+              <div className="space-y-3 max-h-72 overflow-y-auto pr-2 custom-scrollbar">
                 {availableAirports.map((airport) => (
                   <label 
                     key={airport.id} 
                     className={`flex items-center justify-between p-4 border rounded-2xl cursor-pointer transition-all ${
                       vipAirports.includes(airport.id) 
-                        ? 'border-amber-500 bg-amber-50/50 shadow-sm' 
+                        ? 'border-amber-500 bg-amber-50 shadow-sm' 
                         : 'border-slate-100 hover:border-slate-200 bg-white'
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-2 h-2 rounded-full ${vipAirports.includes(airport.id) ? 'bg-amber-500 animate-pulse' : 'bg-slate-200'}`}></div>
-                      <span className={`font-bold text-sm ${vipAirports.includes(airport.id) ? 'text-amber-900' : 'text-slate-600'}`}>
+                      <div className={`w-2.5 h-2.5 rounded-full ${vipAirports.includes(airport.id) ? 'bg-amber-500 animate-pulse' : 'bg-slate-200'} shrink-0`}></div>
+                      <span className={`font-bold text-[14px] ${vipAirports.includes(airport.id) ? 'text-amber-950' : 'text-slate-700'}`}>
                         {airport.name}
                       </span>
                     </div>
                     <input 
                       type="checkbox" 
-                      className="w-5 h-5 accent-amber-500 cursor-pointer rounded-lg" 
+                      className="w-5 h-5 accent-amber-500 cursor-pointer rounded-lg shrink-0" 
                       checked={vipAirports.includes(airport.id)}
                       onChange={() => toggleAirport(airport.id)}
                     />
@@ -574,7 +587,7 @@ export default function VolsPasChers() {
               </div>
               <button 
                 onClick={saveVipAlerts}
-                className="w-full mt-6 bg-amber-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-amber-500/30 hover:bg-amber-400 transition-colors"
+                className="w-full mt-7 bg-amber-500 text-white font-black py-4.5 rounded-xl shadow-lg shadow-amber-500/30 hover:bg-amber-400 transition-colors uppercase tracking-widest text-xs"
               >
                 Sauvegarder mes alertes
               </button>
@@ -585,13 +598,93 @@ export default function VolsPasChers() {
       
       {/* TOAST NOTIFICATION PREMIUM */}
       {showToast && (
-        <div className="fixed top-24 right-8 z-[200] flex items-center gap-4 bg-slate-900 border border-amber-500/50 text-white px-6 py-4 rounded-2xl shadow-2xl animate-in slide-in-from-right duration-500">
-          <div className="bg-amber-500 p-2 rounded-full">
-            <CheckCircle2 size={20} className="text-slate-900" />
+        <div className="fixed top-24 right-4 md:right-8 z-[200] flex items-center gap-4 bg-slate-900 border border-amber-500/50 text-white px-5 py-4 rounded-2xl shadow-2xl animate-in slide-in-from-right duration-500">
+          <div className="bg-amber-500 p-2 rounded-full shrink-0">
+            <CheckCircle2 size={18} className="text-slate-900" />
           </div>
           <div>
-            <p className="font-black text-[10px] uppercase tracking-widest text-amber-500">Système</p>
-            <p className="text-sm font-bold text-slate-100">Configuration VIP mise à jour !</p>
+            <p className="font-black text-[9px] uppercase tracking-widest text-amber-500">Système</p>
+            <p className="text-[13px] font-bold text-slate-100">Configuration VIP mise à jour ! 🎉</p>
+          </div>
+        </div>
+      )}
+      
+      {/* --- NOUVELLE MODALE FILTRES MOBILE (lg:hidden) --- */}
+      {showMobileFilters && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 animate-in fade-in duration-300 lg:hidden">
+          <div className="w-full max-w-lg bg-white rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl animate-in zoom-in-95 duration-300 max-h-[95vh]">
+            
+            {/* Bouton Fermer */}
+            <button 
+              onClick={() => setShowMobileFilters(false)}
+              className="absolute top-5 right-5 z-20 bg-slate-100 text-slate-500 rounded-full p-2.5 hover:bg-slate-200 transition-colors"
+            >
+              <X size={20} />
+            </button>
+
+            {/* Header Modale */}
+            <div className="bg-slate-50 p-7 md:p-8 text-center relative border-b border-slate-100 shrink-0">
+              <Zap size={32} className="text-blue-600 mx-auto mb-3" />
+              <h2 className="text-xl font-black text-slate-900 mb-1 tracking-tight">Filtres du Radar</h2>
+              <p className="text-slate-500 text-xs font-medium px-4 leading-relaxed">Ajustez votre recherche précisément.</p>
+            </div>
+
+            {/* Contenu (Scrollable) */}
+            <div className="p-7 md:p-8 overflow-y-auto custom-scrollbar space-y-9 flex-grow">
+              
+              {/* 1. Aéroport (Exact copy-paste logic) */}
+              <div>
+                <label className="text-[10px] md:text-xs font-bold text-slate-900 mb-4 block uppercase tracking-widest">Aéroport de départ</label>
+                <select value={departure} onChange={(e) => setDeparture(e.target.value)} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 md:p-4 text-xs font-bold outline-none focus:border-blue-500">
+                  <option value="all">Tous les départs FR</option>
+                  <option value="PAR">Paris</option><option value="LYS">Lyon</option><option value="NCE">Nice</option><option value="MRS">Marseille</option><option value="TLS">Toulouse</option><option value="BOD">Bordeaux</option><option value="GVA">Genève</option><option value="BRU">Bruxelles</option>
+                </select>
+              </div>
+              
+              {/* 2. Région (Exact copy-paste logic) */}
+              <div>
+                <label className="text-[10px] md:text-xs font-bold text-slate-900 mb-4 block uppercase tracking-widest">Région</label>
+                <select value={activeRegion} onChange={(e) => setActiveRegion(e.target.value)} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 md:p-4 text-xs font-bold outline-none focus:border-blue-500">
+                  <option value="all">Monde Entier</option>
+                  <option value="asie">Asie & Océanie</option><option value="ameriques">Amériques</option><option value="afrique">Afrique & Océan Indien</option><option value="europe_sud">Europe du Sud</option><option value="europe_nord">Europe du Nord</option>
+                </select>
+              </div>
+
+              {/* 3. Budget (Exact copy-paste logic) */}
+              <div>
+                 <div className="flex justify-between items-center mb-4">
+                  <label className="text-[10px] md:text-xs font-bold text-slate-900 uppercase tracking-widest">Budget Max</label>
+                  <span className="text-blue-600 font-black text-base md:text-lg">{budget}€</span>
+                 </div>
+                 <input type="range" min="100" max="2000" step="50" value={budget} onChange={(e) => setBudget(Number(e.target.value))} className="w-full h-1 md:h-1.5 bg-slate-100 rounded-lg appearance-none accent-blue-600 cursor-pointer" />
+              </div>
+
+              {/* 4. Type de Deal (Exact copy-paste logic) */}
+              <div>
+                <label className="text-[10px] md:text-xs font-bold text-slate-900 mb-6 block uppercase tracking-widest leading-loose">Type de Deal</label>
+                <div className="space-y-6">
+                  {[['good', 'Bon Plan (Dès -15%)', 'bg-yellow-400'], ['super', 'Super Deal (Dès -25%)', 'bg-green-500'], ['rare', 'Erreur de Prix (Dès -50%)', 'bg-orange-600']].map(([key, label, color]) => (
+                    <label key={key} className="flex items-center justify-between cursor-pointer group">
+                      <div className="flex items-center gap-3.5">
+                        <input type="checkbox" checked={dealFilters[key]} onChange={() => setDealFilters({...dealFilters, [key]: !dealFilters[key]})} className="w-5 h-5 md:w-4 md:h-4 rounded-lg border-slate-200 text-blue-600 focus:ring-0 cursor-pointer" />
+                        <span className="text-xs md:text-sm font-bold text-slate-500 group-hover:text-slate-900 transition-colors whitespace-nowrap">{label}</span>
+                      </div>
+                      <div className={`w-2 h-2 md:w-2 md:h-2 rounded-full shrink-0 ml-4 ${color}`}></div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Bouton Appliquer (Sticky footer) */}
+            <div className="mt-auto p-7 md:p-8 border-t border-slate-100 bg-white sticky bottom-0 z-10">
+              <button 
+                onClick={() => setShowMobileFilters(false)}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4.5 rounded-2xl transition-all uppercase tracking-widest text-xs shadow-lg shadow-blue-600/20"
+              >
+                Appliquer les filtres
+              </button>
+            </div>
           </div>
         </div>
       )}
