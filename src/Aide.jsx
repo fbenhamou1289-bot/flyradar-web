@@ -83,13 +83,13 @@ export default function Aide() {
         </div>
 
         <div className="flex items-center gap-3 md:gap-4 lg:gap-5">
-          <button onClick={() => navigate('/connexion')} className="hidden sm:flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors">
-            <User size={16} /> Connexion
-          </button>
-          
-          <button onClick={() => navigate('/')} className="hidden md:flex items-center gap-1.5 text-sm font-bold text-slate-700 hover:text-slate-900 transition-colors border border-slate-300 px-4 py-2 rounded-full hover:bg-slate-50">
-            <ArrowLeft size={16} /> Retour à l'accueil
-          </button>
+        <button onClick={() => navigate('/connexion')} className="flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors">
+  <User size={16} /> Connexion
+</button>
+
+<button onClick={() => navigate('/')} className="flex items-center gap-1.5 text-sm font-bold text-slate-700 hover:text-slate-900 transition-colors border border-slate-300 px-4 py-2 rounded-full hover:bg-slate-50">
+  <ArrowLeft size={16} /> Retour à l'accueil
+</button>
           
           <button onClick={() => navigate('/inscription-gold')} className="text-xs md:text-sm font-bold text-white bg-amber-500 hover:bg-amber-400 transition-colors border border-amber-600/20 px-4 py-2 rounded-full flex items-center gap-1.5 shadow-sm">
             <Crown size={16} /> Go Gold
