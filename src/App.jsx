@@ -26,15 +26,13 @@ const CaptureForm = ({ navigate }) => {
 
     try {
       const emailClean = emailInput.toLowerCase().trim();
-      const secretPassword = "FlyRadar_User_2026!"; // Le mot de passe caché universel
+      const secretPassword = "FlyRadar_User_2026!";
 
-      // 1. On crée la vraie session sécurisée Supabase en arrière-plan
       let { error: authError } = await supabase.auth.signUp({
         email: emailClean,
         password: secretPassword,
       });
 
-      // 2. Si le compte existe déjà, on le connecte simplement
       if (authError && authError.message.includes('already registered')) {
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email: emailClean,
@@ -45,8 +43,6 @@ const CaptureForm = ({ navigate }) => {
         throw authError;
       }
 
-      // 3. On sauvegarde ses infos dans ta table 'Users' 
-      // (Sans toucher au is_gold pour ne pas écraser son abonnement s'il a déjà payé !)
       const { error: dbError } = await supabase
         .from('Users')
         .upsert(
@@ -59,7 +55,6 @@ const CaptureForm = ({ navigate }) => {
         
       if (dbError) throw dbError;
       
-      // On garde ces lignes provisoirement pour ne pas casser ta page Radar actuelle
       localStorage.setItem('flyradar_user_email', emailClean);
       localStorage.setItem('flyradar_free_access', 'true');
       
@@ -71,6 +66,7 @@ const CaptureForm = ({ navigate }) => {
       setIsLoading(false);
     }
   };
+
   if (isSubscribed) {
     return (
       <div className="bg-white rounded-3xl p-8 w-full max-w-2xl mx-auto z-20 relative text-center shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-500">
@@ -155,14 +151,12 @@ function Accueil() {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session) {
-        // Au lieu de dire "Amen", on va vérifier dans la base de données
         const { data: userData } = await supabase
           .from('Users')
           .select('is_gold')
           .eq('email', session.user.email)
           .maybeSingle();
 
-        // On n'active le mode Gold QUE si la base de données dit "true"
         if (userData && userData.is_gold === true) {
           setIsGoldUser(true);
         } else {
@@ -207,9 +201,9 @@ function Accueil() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans overflow-x-hidden selection:bg-blue-100 selection:text-blue-900">
       
-      {/* HEADER DYNAMIQUE */}
-      <header className="h-16 md:h-20 px-4 md:px-8 flex items-center justify-between bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
-        <div className="flex items-center gap-6">
+      {/* HEADER DYNAMIQUE : Modifications apportées ici pour le mobile */}
+      <header className="py-3 px-4 md:h-20 md:px-8 flex flex-wrap md:flex-nowrap items-center justify-between bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 gap-y-3">
+        <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
             <Target className="text-blue-600" size={24} strokeWidth={2.5} />
             <span className="text-xl md:text-2xl tracking-tight text-slate-900">
@@ -226,48 +220,48 @@ function Accueil() {
           </div>
         </div>
 
-        {/* --- LE GROUPE DE BOUTONS UNIFIÉ --- */}
-        <div className="flex items-center gap-4 lg:gap-6">
+        {/* --- LE GROUPE DE BOUTONS UNIFIÉ (Responsive) --- */}
+        <div className="flex items-center gap-3 lg:gap-6 w-full md:w-auto justify-end overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
           
-          {/* L'AIDE : TOUJOURS LÀ, DESIGN MINIMALISTE */}
-          <button onClick={() => navigate('/aide')} className="hidden lg:flex items-center gap-1.5 text-[10px] font-black text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-[0.2em] border-b border-transparent hover:border-slate-200 pb-1">
-            <HelpCircle size={14} className="text-slate-300" /> Aide
+          <button onClick={() => navigate('/aide')} className="flex items-center gap-1.5 text-[10px] font-black text-slate-500 hover:text-slate-700 transition-colors uppercase tracking-[0.1em] md:tracking-[0.2em] whitespace-nowrap">
+            <HelpCircle size={14} className="text-slate-400" /> Aide
           </button>
 
           {isGoldUser ? (
-            <div className="flex items-center gap-4 lg:gap-6">
+            <div className="flex items-center gap-3 lg:gap-6">
               <button 
                 onClick={handleLogout}
-                className="text-[10px] font-black text-slate-400 hover:text-red-500 transition-colors uppercase tracking-[0.2em] border-b border-transparent hover:border-red-200 pb-1"
+                className="text-[10px] font-black text-slate-500 hover:text-red-500 transition-colors uppercase tracking-[0.1em] whitespace-nowrap"
               >
                 Déconnexion
               </button>
 
-              {/* LE BOUTON OFFRES EN DIRECT EST DE RETOUR ICI */}
               <button 
                 onClick={() => navigate('/vols-pas-chers')} 
-                className="hidden md:block text-sm font-bold text-slate-700 hover:text-slate-900 transition-colors border border-slate-300 px-4 lg:px-5 py-2 rounded-full hover:bg-slate-50"
+                className="flex text-xs md:text-sm font-bold text-slate-700 hover:text-slate-900 transition-colors border border-slate-300 px-3 md:px-5 py-1.5 md:py-2 rounded-full hover:bg-slate-50 whitespace-nowrap"
               >
                 Offres en direct
               </button>
 
               <button 
                 onClick={() => navigate('/vols-pas-chers', { state: { openVipModal: true } })} 
-                className="bg-slate-900 text-amber-400 font-bold px-5 py-2 rounded-full flex items-center gap-2 text-xs shadow-sm hover:bg-slate-800 transition-colors border border-amber-500/30"
+                className="bg-slate-900 text-amber-400 font-bold px-3 md:px-5 py-1.5 md:py-2 rounded-full flex items-center gap-1.5 text-xs shadow-sm hover:bg-slate-800 transition-colors border border-amber-500/30 whitespace-nowrap"
               >
-                <Crown size={14} /> Mes Alertes VIP
+                <Crown size={14} /> VIP
               </button>
             </div>
           ) : (
             <>
-              <button onClick={() => navigate('/connexion')} className="hidden sm:flex items-center gap-1.5 text-sm font-bold text-amber-600 hover:text-amber-700 transition-colors border border-amber-500 px-4 lg:px-5 py-2 rounded-full hover:bg-amber-50">
-                <Crown size={16} /> Connexion Gold
+              <button onClick={() => navigate('/connexion')} className="flex items-center gap-1.5 text-xs md:text-sm font-bold text-amber-600 hover:text-amber-700 transition-colors border border-amber-500 px-3 md:px-5 py-1.5 md:py-2 rounded-full hover:bg-amber-50 whitespace-nowrap">
+                <Crown size={14} className="md:w-4 md:h-4" /> Connexion
               </button>
-              <button onClick={handleLiveOffersClick} className="hidden md:block text-sm font-bold text-slate-700 hover:text-slate-900 transition-colors border border-slate-300 px-4 lg:px-5 py-2 rounded-full hover:bg-slate-50">
+              
+              <button onClick={handleLiveOffersClick} className="flex text-xs md:text-sm font-bold text-slate-700 hover:text-slate-900 transition-colors border border-slate-300 px-3 md:px-5 py-1.5 md:py-2 rounded-full hover:bg-slate-50 whitespace-nowrap">
                 Offres en direct
               </button>
-              <button onClick={() => navigate('/inscription-gold')} className="text-xs md:text-sm font-bold text-white bg-amber-500 hover:bg-amber-400 transition-colors border border-amber-600/20 px-3 lg:px-5 py-2 rounded-full flex items-center gap-1.5 shadow-sm">
-                <Crown size={16} /> Go Gold
+              
+              <button onClick={() => navigate('/inscription-gold')} className="text-xs md:text-sm font-bold text-white bg-amber-500 hover:bg-amber-400 transition-colors border border-amber-600/20 px-3 md:px-5 py-1.5 md:py-2 rounded-full flex items-center gap-1.5 shadow-sm whitespace-nowrap">
+                <Crown size={14} className="md:w-4 md:h-4" /> Go Gold
               </button>
             </>
           )}
@@ -358,7 +352,7 @@ function Accueil() {
               </div>
             </div>
 
-            <div className="group bg-white rounded-2xl p-4 border border-slate-200 relative shadow-sm transition-all duration-500 hidden md:block hover:shadow-xl hover:-translate-y-1">
+            <div className="group bg-white rounded-2xl p-4 border border-slate-200 relative shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
               <div className="absolute inset-0 bg-slate-900/40 z-10 rounded-2xl group-hover:opacity-0 transition-opacity flex items-center justify-center overflow-hidden">
                 <div className="border-4 border-red-600 text-red-600 font-black text-4xl px-4 py-2 rotate-[-25deg] uppercase opacity-90">EXPIRED</div>
               </div>
@@ -384,9 +378,9 @@ function Accueil() {
               <p className="text-slate-500 text-sm mb-8">Testez l'efficacité de nos agents.</p>
               <div className="mb-8 font-black text-5xl">0€<span className="text-slate-400 text-lg">/mois</span></div>
               <ul className="space-y-4 mb-auto text-sm font-semibold">
-                <li className="flex gap-3"><Check className="text-blue-500" /> Bons plans Éco (max 50% de réduction)</li>
-                <li className="flex gap-3"><Check className="text-blue-500" /> 1 alerte maximum activée</li>
-                <li className="flex gap-3 text-amber-600"><AlertCircle /> <span className="underline">4h de retard vs Gold</span></li>
+                <li className="flex gap-3"><Check className="text-blue-500 shrink-0" /> Bons plans Éco (max 50% de réduction)</li>
+                <li className="flex gap-3"><Check className="text-blue-500 shrink-0" /> 1 alerte maximum activée</li>
+                <li className="flex gap-3 text-amber-600"><AlertCircle className="shrink-0" /> <span className="underline">4h de retard vs Gold</span></li>
               </ul>
               <button onClick={scrollToForm} className="mt-10 bg-slate-100 py-4 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-slate-200 transition-colors text-slate-800">S'inscrire</button>
             </div>
@@ -399,10 +393,10 @@ function Accueil() {
                 <div className="mb-4 font-black text-5xl text-white">9,99€<span className="text-slate-500 text-lg">/mois</span></div>
                 <p className="text-slate-500 text-xs font-bold mb-8 uppercase tracking-widest">Ou <span className="text-amber-500">89,90€ /an</span> (3 mois offerts)</p>
                 <ul className="space-y-4 mb-auto text-sm font-semibold text-slate-300">
-                  <li className="flex gap-3"><Check className="text-amber-500" /> <span className="text-white">Instantané :</span> Alerte à la seconde</li>
-                  <li className="flex gap-3"><Check className="text-amber-500" /> Business & Première incluses</li>
-                  <li className="flex gap-3"><Check className="text-amber-500" /> Alertes illimitées</li>
-                  <li className="flex gap-3 text-white"><Check className="text-green-500" /> Remises jusqu'à 90%</li>
+                  <li className="flex gap-3"><Check className="text-amber-500 shrink-0" /> <span className="text-white">Instantané :</span> Alerte à la seconde</li>
+                  <li className="flex gap-3"><Check className="text-amber-500 shrink-0" /> Business & Première incluses</li>
+                  <li className="flex gap-3"><Check className="text-amber-500 shrink-0" /> Alertes illimitées</li>
+                  <li className="flex gap-3 text-white"><Check className="text-green-500 shrink-0" /> Remises jusqu'à 90%</li>
                 </ul>
                 <button onClick={() => navigate('/inscription-gold')} className="mt-10 bg-amber-500 py-4 rounded-xl font-black uppercase text-xs tracking-widest text-slate-950 flex items-center justify-center gap-2 hover:bg-amber-400 transition-colors">
                   <Crown size={16} /> Go Gold
@@ -417,9 +411,12 @@ function Accueil() {
       <section className="py-24 bg-white px-4 md:px-6 max-w-7xl mx-auto w-full">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3 tracking-tight">Ils voyagent avec une longueur d'avance.</h2>
-          <div className="flex items-center justify-center gap-2 text-xl font-bold text-slate-900">
-            Évaluation <div className="flex gap-1 text-green-500"><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /></div>
-            <span className="ml-2 text-slate-400 text-sm font-medium">4.9/5 sur Trustpilot</span>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-xl font-bold text-slate-900">
+            <span>Évaluation</span> 
+            <div className="flex gap-1 text-green-500">
+              <Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" />
+            </div>
+            <span className="sm:ml-2 text-slate-400 text-sm font-medium">4.9/5 sur Trustpilot</span>
           </div>
         </div>
 
@@ -449,10 +446,10 @@ function Accueil() {
       </section>
 
       {/* FOOTER AVEC COMPLIANCE */}
-      <footer className="py-12 text-center border-t border-slate-200 bg-white flex flex-col items-center justify-center">
+      <footer className="py-12 text-center border-t border-slate-200 bg-white flex flex-col items-center justify-center px-4">
         <p className="text-slate-400 text-xs font-black uppercase tracking-[0.3em] mb-4">© 2026 FlyRadar aviation • No limits</p>
         
-        <div className="flex flex-wrap justify-center gap-4 text-xs font-medium text-slate-400 mb-6">
+        <div className="flex flex-wrap justify-center gap-4 text-xs font-medium text-slate-400 mb-6 leading-loose">
           <button onClick={() => navigate('/aide')} className="hover:text-slate-700 transition-colors">Aide / FAQ</button>
           <span>|</span>
           <button onClick={() => navigate('/mentions-legales')} className="hover:text-slate-700 transition-colors">Mentions Légales</button>
@@ -462,7 +459,7 @@ function Accueil() {
           <button onClick={() => navigate('/cgv')} className="hover:text-slate-700 transition-colors">CGV & CGU</button>
         </div>
 
-        <p className="text-[10px] lowercase font-medium text-slate-300 italic max-w-lg px-4">
+        <p className="text-[10px] lowercase font-medium text-slate-300 italic max-w-lg">
           Témoignages basés sur les retours d'expérience de nos utilisateurs bêta. Les réductions affichées dépendent des fluctuations des compagnies aériennes.
         </p>
       </footer>
