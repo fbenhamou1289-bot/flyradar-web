@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #F8FAFC; 
+  color: #0F172A;
+  font-family: 'Inter', sans-serif;
+}
+
+/* L'animation premium pour ton bouton Gold */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.btn-gold-shimmer {
+  background: linear-gradient(90deg, #F59E0B 25%, #FCD34D 50%, #F59E0B 75%);
+  background-size: 200% auto;
+  animation: shimmer 4s linear infinite;
+  color: white;
+  font-weight: bold;
+}
