@@ -43,7 +43,7 @@ export default function VolsPasChers() {
   const [showVipModal, setShowVipModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
   
-  // -- NOUVEL ÉTAT POUR MOBILE --
+  // -- ÉTAT POUR MOBILE --
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   
   const [vipAirports, setVipAirports] = useState([]);
@@ -286,20 +286,17 @@ export default function VolsPasChers() {
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] font-sans antialiased text-slate-900 overflow-x-hidden">
       
-      {/* HEADER */}
+      {/* HEADER CORRIGÉ (Logo protégé avec shrink-0) */}
       <header className="fixed top-0 left-0 right-0 h-20 px-4 md:px-8 flex items-center justify-between z-50 bg-white/90 backdrop-blur-xl border-b border-slate-100">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.location.href="/"}>
-            <Target className="text-blue-600 shrink-0" size={24} strokeWidth={2.5} />
-            <span className="text-xl font-bold tracking-tight">Fly<span className="text-blue-600 shrink-0">Radar</span></span>
-          </div>
-          <div className="hidden md:flex items-center gap-2">
-            <span className="relative flex h-2 w-2 shrink-0"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>
-            <span className="text-[9px] font-black uppercase tracking-widest text-green-600">Live</span>
-          </div>
+        
+        {/* LOGO */}
+        <div className="flex items-center gap-2 cursor-pointer shrink-0" onClick={() => window.location.href="/"}>
+          <Target className="text-blue-600 shrink-0" size={24} strokeWidth={2.5} />
+          <span className="text-xl font-black tracking-tight text-slate-900 whitespace-nowrap">Fly<span className="text-blue-600">Radar</span></span>
         </div>
         
-        <div className="flex items-center gap-3 lg:gap-6">
+        {/* BOUTONS DE DROITE */}
+        <div className="flex items-center gap-3 lg:gap-6 shrink-0">
           <button onClick={() => navigate('/aide')} className="hidden lg:flex items-center gap-1.5 text-[10px] font-black text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-[0.2em] border-b border-transparent hover:border-slate-200 pb-1">
             <HelpCircle size={14} className="text-slate-300" /> Aide
           </button>
@@ -314,14 +311,14 @@ export default function VolsPasChers() {
           {!isGoldUser ? (
             <button 
               onClick={() => navigate('/inscription-gold')} 
-              className="bg-amber-500 text-white font-bold px-3 py-2 rounded-full flex items-center gap-1.5 text-[11px] shadow-sm hover:bg-amber-400 transition-colors"
+              className="bg-amber-500 text-white font-bold px-3 py-2 rounded-full flex items-center gap-1.5 text-[11px] shadow-sm hover:bg-amber-400 transition-colors whitespace-nowrap"
             >
               <Crown size={14} /> Go Gold
             </button>
           ) : (
             <button 
             onClick={() => setShowVipModal(true)}
-              className="bg-slate-900 text-amber-400 font-bold px-3 py-2 rounded-full flex items-center gap-1.5 text-[11px] shadow-sm hover:bg-slate-800 transition-colors border border-amber-500/30"
+              className="bg-slate-900 text-amber-400 font-bold px-3 py-2 rounded-full flex items-center gap-1.5 text-[11px] shadow-sm hover:bg-slate-800 transition-colors border border-amber-500/30 whitespace-nowrap"
             >
               <Crown size={14} /> Alertes VIP
             </button>
@@ -385,7 +382,7 @@ export default function VolsPasChers() {
                 type="text" 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Où souhaitez-vous aller ? (ex: Bali, Tokyo...)" 
+                placeholder="Où souhaitez-vous aller ?" 
                 className="w-full bg-white border-2 border-slate-100 rounded-2xl py-4 pl-12 pr-4 font-bold text-slate-900 focus:border-blue-600 outline-none shadow-sm transition-all"
               />
             </div>
@@ -395,9 +392,9 @@ export default function VolsPasChers() {
           <div className="lg:hidden mb-10 flex justify-end">
             <button 
               onClick={() => setShowMobileFilters(true)}
-              className="bg-slate-900 text-white px-5 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg hover:bg-slate-800 transition-colors"
+              className="bg-slate-900 text-white px-6 py-3.5 rounded-xl text-[12px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg hover:bg-slate-800 transition-colors"
             >
-              <Zap size={14} className="text-blue-500 shrink-0" /> Filtres {departure !== 'all' || activeRegion !== 'all' || budget < 2000 || Object.values(dealFilters).includes(false) ? '(Actifs)' : ''}
+              <Zap size={16} className="text-blue-500 shrink-0" /> Filtres {departure !== 'all' || activeRegion !== 'all' || budget < 2000 || Object.values(dealFilters).includes(false) ? '(Actifs)' : ''}
             </button>
           </div>
 
@@ -540,8 +537,8 @@ export default function VolsPasChers() {
         </div>
       )}
 
-    {/* MODALE VIP ALERTES */}
-    {showVipModal && (
+      {/* MODALE VIP ALERTES */}
+      {showVipModal && (
         <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
           <div className="bg-white rounded-[2.5rem] w-full max-w-md overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300">
             <button 
@@ -609,25 +606,27 @@ export default function VolsPasChers() {
         </div>
       )}
       
-      {/* --- NOUVELLE MODALE FILTRES MOBILE (lg:hidden) --- */}
+      {/* --- MODALE FILTRES MOBILE (BOTTOM SHEET) --- */}
       {showMobileFilters && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 animate-in fade-in duration-300 lg:hidden">
-          {/* On réduit la taille max à 80vh pour être sûr que ça passe au-dessus de la barre Safari/Chrome */}
-          <div className="w-full max-w-lg bg-white rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl animate-in zoom-in-95 duration-300 max-h-[80vh]">
+        <div className="fixed inset-0 z-[120] bg-slate-900/80 backdrop-blur-sm lg:hidden animate-in fade-in duration-300">
+          
+          {/* Le "Tiroir" collé en bas (Bottom Sheet) */}
+          <div className="absolute bottom-0 left-0 right-0 w-full bg-white rounded-t-[2rem] flex flex-col shadow-2xl animate-in slide-in-from-bottom-8 duration-300" style={{ height: '85vh' }}>
             
-            <button 
-              onClick={() => setShowMobileFilters(false)}
-              className="absolute top-4 right-4 z-20 bg-slate-100 text-slate-500 rounded-full p-2.5 hover:bg-slate-200 transition-colors"
-            >
-              <X size={20} />
-            </button>
-
-            <div className="bg-slate-50 p-6 text-center relative border-b border-slate-100 shrink-0">
-              <Zap size={28} className="text-blue-600 mx-auto mb-2" />
-              <h2 className="text-xl font-black text-slate-900 mb-1 tracking-tight">Filtres du Radar</h2>
+            {/* Header (Fixé en haut du tiroir) */}
+            <div className="bg-slate-50 p-6 text-center relative border-b border-slate-100 shrink-0 rounded-t-[2rem]">
+              <button 
+                onClick={() => setShowMobileFilters(false)}
+                className="absolute top-4 right-4 z-20 bg-slate-200 text-slate-600 rounded-full p-2 hover:bg-slate-300"
+              >
+                <X size={20} />
+              </button>
+              <Zap size={24} className="text-blue-600 mx-auto mb-2" />
+              <h2 className="text-lg font-black text-slate-900 tracking-tight">Filtres du Radar</h2>
             </div>
 
-            <div className="p-6 overflow-y-auto custom-scrollbar space-y-8 flex-grow">
+            {/* Contenu Scrollable */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar pb-32">
               <div>
                 <label className="text-[10px] font-bold text-slate-900 mb-3 block uppercase tracking-widest">Aéroport de départ</label>
                 <select value={departure} onChange={(e) => setDeparture(e.target.value)} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs font-bold outline-none focus:border-blue-500 appearance-none">
@@ -668,15 +667,20 @@ export default function VolsPasChers() {
               </div>
             </div>
 
-            {/* Le fameux bouton fixé avec shrink-0 pour ne jamais être écrasé */}
-            <div className="p-6 border-t border-slate-100 bg-white shrink-0">
+            {/* Bouton Appliquer (Cloué en bas) */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-100 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)] z-10">
               <button 
                 onClick={() => setShowMobileFilters(false)}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl transition-all uppercase tracking-widest text-xs shadow-lg shadow-blue-600/20"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl uppercase tracking-widest text-xs shadow-lg shadow-blue-600/20"
               >
                 Appliquer les filtres
               </button>
             </div>
+
           </div>
         </div>
       )}
+
+    </div>
+  );
+}
