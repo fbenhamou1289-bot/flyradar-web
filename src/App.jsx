@@ -5,6 +5,7 @@ import SuccesPaiement from './SuccesPaiement';
 import Contact from './Contact';
 import Connexion from './Connexion';
 import InscriptionGold from './InscriptionGold';
+import Desabonnement from './Desabonnement';
 import { Target, ArrowRight, MapPin, Radar, Server, Zap, Crown, Check, Star, AlertCircle, CheckCircle2, User, HelpCircle } from 'lucide-react';
 import VolsPasChers, { supabase } from './VolsPasChers';
 
@@ -502,6 +503,7 @@ export default function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/connexion" element={<Connexion />} />
         <Route path="/succes" element={<SuccesPaiement />} />
+        <Route path="/desabonnement" element={<Desabonnement />} />
       </Routes>
     </BrowserRouter>
   );
