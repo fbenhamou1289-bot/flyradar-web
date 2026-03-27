@@ -8,6 +8,22 @@ import InscriptionGold from './InscriptionGold';
 import { Target, ArrowRight, MapPin, Radar, Server, Zap, Crown, Check, Star, AlertCircle, CheckCircle2, User, HelpCircle } from 'lucide-react';
 import VolsPasChers, { supabase } from './VolsPasChers';
 
+// --- LES OFFRES FICTIVES (FOMO) QUI TOURNENT TOUS LES JOURS ---
+const FOMO_DEALS = [
+  { city: "Bali, Indonésie", type: "A/R depuis Paris", price: "380€", code: "DPS" },
+  { city: "New York, USA", type: "Vol direct", price: "210€", code: "NYC" },
+  { city: "Santorin, Grèce", type: "A/R direct", price: "45€", code: "JTR" },
+  { city: "Tokyo, Japon", type: "A/R depuis Lyon", price: "350€", code: "TYO" },
+  { city: "Dubaï, EAU", type: "Vol direct hiver", price: "150€", code: "DXB" },
+  { city: "Cancún, Mexique", type: "A/R depuis Paris", price: "290€", code: "CUN" },
+  { city: "La Réunion", type: "A/R direct", price: "310€", code: "RUN" },
+  { city: "Ibiza, Espagne", type: "Aller simple", price: "19€", code: "IBZ" },
+  { city: "Montréal, Canada", type: "Vol direct", price: "190€", code: "YUL" },
+  { city: "Malé, Maldives", type: "A/R depuis Paris", price: "410€", code: "MLE" }
+];
+
+const SUPABASE_IMAGE_URL = "https://jltaldrfjgczgtrtmmrd.supabase.co/storage/v1/object/public/destinations";
+
 // --- COMPOSANT : LE FORMULAIRE DE CAPTURE ---
 const CaptureForm = ({ navigate }) => {
   const [emailInput, setEmailInput] = useState('');
@@ -145,8 +161,10 @@ const CaptureForm = ({ navigate }) => {
 function Accueil() {
   const navigate = useNavigate();
   const [isGoldUser, setIsGoldUser] = useState(false);
+  const [dailyDeals, setDailyDeals] = useState([]);
 
   useEffect(() => {
+    // Vérification de la session
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       
@@ -165,6 +183,15 @@ function Accueil() {
       }
     };
     checkSession();
+
+    // Calcul des 3 offres du jour basé sur la date !
+    const dayOfYear = Math.floor(Date.now() / 86400000); // Nombre de jours depuis 1970
+    setDailyDeals([
+      FOMO_DEALS[dayOfYear % FOMO_DEALS.length],
+      FOMO_DEALS[(dayOfYear + 1) % FOMO_DEALS.length],
+      FOMO_DEALS[(dayOfYear + 2) % FOMO_DEALS.length]
+    ]);
+
   }, []);
 
   const handleLogout = async () => {
@@ -201,7 +228,7 @@ function Accueil() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans overflow-x-hidden selection:bg-blue-100 selection:text-blue-900">
       
-      {/* HEADER DYNAMIQUE : Modifications apportées ici pour le mobile */}
+      {/* HEADER DYNAMIQUE */}
       <header className="py-3 px-4 md:h-20 md:px-8 flex flex-wrap md:flex-nowrap items-center justify-between bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 gap-y-3">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
@@ -220,7 +247,7 @@ function Accueil() {
           </div>
         </div>
 
-        {/* --- LE GROUPE DE BOUTONS UNIFIÉ (Responsive) --- */}
+        {/* --- LE GROUPE DE BOUTONS --- */}
         <div className="flex items-center gap-3 lg:gap-6 w-full md:w-auto justify-end overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
           
           <button onClick={() => navigate('/aide')} className="flex items-center gap-1.5 text-[10px] font-black text-slate-500 hover:text-slate-700 transition-colors uppercase tracking-[0.1em] md:tracking-[0.2em] whitespace-nowrap">
@@ -321,7 +348,7 @@ function Accueil() {
         </div>
       </section>
 
-      {/* ACTE 3 : FOMO VOLS EXPIRÉS */}
+      {/* ACTE 3 : FOMO VOLS EXPIRÉS (DYNAMIQUE) */}
       <section className="py-16 md:py-20 bg-slate-50 border-y border-slate-200">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <div className="text-center mb-10">
@@ -330,38 +357,34 @@ function Accueil() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="group bg-white rounded-2xl p-4 border border-slate-200 relative shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
-              <div className="absolute inset-0 bg-slate-900/40 z-10 rounded-2xl group-hover:opacity-0 transition-opacity flex items-center justify-center overflow-hidden">
-                <div className="border-4 border-red-600 text-red-600 font-black text-4xl px-4 py-2 rotate-[-20deg] uppercase opacity-90 scale-110">EXPIRED</div>
-              </div>
-              <img src="https://images.pexels.com/photos/1483053/pexels-photo-1483053.jpeg?auto=compress&cs=tinysrgb&w=600" className="w-full h-44 object-cover rounded-xl mb-4 grayscale group-hover:grayscale-0 transition-all duration-700" alt="Maldives" />
-              <div className="flex justify-between items-start px-1">
-                <div><h3 className="font-bold text-slate-900">Malé, Maldives</h3><p className="text-xs text-slate-500">A/R depuis Paris</p></div>
-                <div className="text-right font-black text-slate-900 text-xl">310€</div>
-              </div>
-            </div>
-
-            <div className="group bg-white rounded-2xl p-4 border border-slate-200 relative shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
-              <div className="absolute inset-0 bg-slate-900/40 z-10 rounded-2xl group-hover:opacity-0 transition-opacity flex items-center justify-center overflow-hidden">
-                <div className="border-4 border-red-600 text-red-600 font-black text-4xl px-4 py-2 rotate-[-15deg] uppercase opacity-90">EXPIRED</div>
-              </div>
-              <img src="https://images.pexels.com/photos/1000084/pexels-photo-1000084.jpeg?auto=compress&cs=tinysrgb&w=600" className="w-full h-44 object-cover rounded-xl mb-4 grayscale group-hover:grayscale-0 transition-all duration-700" alt="Montréal" />
-              <div className="flex justify-between items-start px-1">
-                <div><h3 className="font-bold text-slate-900">Montréal, Canada</h3><p className="text-xs text-slate-500">Vol direct hivernal</p></div>
-                <div className="text-right font-black text-slate-900 text-xl">190€</div>
-              </div>
-            </div>
-
-            <div className="group bg-white rounded-2xl p-4 border border-slate-200 relative shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
-              <div className="absolute inset-0 bg-slate-900/40 z-10 rounded-2xl group-hover:opacity-0 transition-opacity flex items-center justify-center overflow-hidden">
-                <div className="border-4 border-red-600 text-red-600 font-black text-4xl px-4 py-2 rotate-[-25deg] uppercase opacity-90">EXPIRED</div>
-              </div>
-              <img src="https://images.pexels.com/photos/237211/pexels-photo-237211.jpeg?auto=compress&cs=tinysrgb&w=600" className="w-full h-44 object-cover rounded-xl mb-4 grayscale group-hover:grayscale-0 transition-all duration-700" alt="Seoul" />
-              <div className="flex justify-between items-start px-1">
-                <div><h3 className="font-bold text-slate-900">Séoul, Corée</h3><p className="text-sm text-slate-500">A/R depuis Paris</p></div>
-                <div className="text-right font-black text-slate-900 text-xl">365€</div>
-              </div>
-            </div>
+            {dailyDeals.map((deal, index) => {
+              // On crée une petite rotation différente pour l'étiquette "EXPIRED" selon l'index
+              const rotations = ['rotate-[-20deg]', 'rotate-[-15deg]', 'rotate-[-25deg]'];
+              
+              return (
+                <div key={index} className="group bg-white rounded-2xl p-4 border border-slate-200 relative shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
+                  <div className="absolute inset-0 bg-slate-900/40 z-10 rounded-2xl group-hover:opacity-0 transition-opacity flex items-center justify-center overflow-hidden">
+                    <div className={`border-4 border-red-600 text-red-600 font-black text-4xl px-4 py-2 uppercase opacity-90 scale-110 ${rotations[index]}`}>
+                      EXPIRED
+                    </div>
+                  </div>
+                  {/* L'image pointe directement vers ta banque Supabase ! */}
+                  <img 
+                    src={`${SUPABASE_IMAGE_URL}/${deal.code}.jpg`} 
+                    className="w-full h-44 object-cover rounded-xl mb-4 grayscale group-hover:grayscale-0 transition-all duration-700" 
+                    alt={deal.city} 
+                    onError={(e) => { e.target.src = `https://source.unsplash.com/800x450/?${encodeURIComponent(deal.city)},travel` }}
+                  />
+                  <div className="flex justify-between items-start px-1">
+                    <div>
+                      <h3 className="font-bold text-slate-900">{deal.city}</h3>
+                      <p className="text-xs text-slate-500">{deal.type}</p>
+                    </div>
+                    <div className="text-right font-black text-slate-900 text-xl">{deal.price}</div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
