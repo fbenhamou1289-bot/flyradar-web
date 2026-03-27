@@ -164,8 +164,9 @@ export default function VolsPasChers() {
         const { data, error } = await supabase.from('Flights').select('*');
         if (error) throw error;
         
+        // CORRECTION 1 : On groupe par Destination ET par Aéroport de départ
         const grouped = data.reduce((acc, flight) => {
-          const key = flight.destination_code;
+          const key = `${flight.destination_code}_${flight.origine_code}`;
           if (!acc[key]) {
             acc[key] = { 
               ...flight, 
@@ -173,7 +174,9 @@ export default function VolsPasChers() {
               all_flights: [flight] 
             };
           } else {
-            acc[key].all_origins = [...new Set([...acc[key].all_origins, flight.origine_code])];
+            if (!acc[key].all_origins.includes(flight.origine_code)) {
+              acc[key].all_origins.push(flight.origine_code);
+            }
             acc[key].all_flights.push(flight); 
             
             if (flight.price < acc[key].price) {
@@ -220,7 +223,7 @@ export default function VolsPasChers() {
         });
 
         if (data.length > 0) {
-          const latest = new Date(Math.max(...data.map(e => new Date(e.last_updated))));
+          const latest = new Date(Math.max(...data.map(e => new Date(e.last_updated || e.created_at))));
           const diff = Math.floor((new Date() - latest) / 60000);
           const displayDiff = Math.min(diff, 9); 
           setLastUpdateTxt(displayDiff > 0 ? `Vérifié il y a ${displayDiff} min` : 'Vérifié à l\'instant');
@@ -403,6 +406,10 @@ export default function VolsPasChers() {
               const isRareLocked = deal.dealType === 'rare' && !isGoldUser; 
               const isTimeLocked = deal.isTimeLocked && !isGoldUser;
               const isLocked = isRareLocked || isTimeLocked;
+              
+              // CORRECTION 2 : Vérification du nombre de dates
+              const isSingleDate = deal.count_dates === 1;
+              const singleFlight = deal.all_flights[0];
 
               return (
                 <div key={deal.id} className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm flex flex-col h-full group hover:shadow-md transition-all relative">
@@ -452,7 +459,16 @@ export default function VolsPasChers() {
                       </p>
                       
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-5 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                        <div className="flex items-center gap-1.5 whitespace-nowrap"><Calendar size={12} className="text-blue-500 shrink-0"/> {deal.count_dates} dates dispos</div>
+                        <div className="flex items-center gap-1.5 whitespace-nowrap">
+                          <Calendar size={12} className="text-blue-500 shrink-0"/> 
+                          {isSingleDate && singleFlight ? (
+                            singleFlight.return_date 
+                              ? `${new Date(singleFlight.dates).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} - ${new Date(singleFlight.return_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`
+                              : `${new Date(singleFlight.dates).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`
+                          ) : (
+                            `${deal.count_dates} dates dispos`
+                          )}
+                        </div>
                         <div className="flex items-center gap-1.5 whitespace-nowrap">
                           {deal.stops === null ? '' : (deal.stops == 0 || deal.stops === '0' ? 'Vol Direct' : `${deal.stops} Escale(s)`)}
                         </div>
@@ -471,7 +487,11 @@ export default function VolsPasChers() {
                       </div>
 
                       <div className="mt-auto pt-5 border-t border-slate-100">
-                         <button onClick={() => setSelectedDeal(deal)} className="w-full bg-slate-900 hover:bg-blue-700 text-white shadow-lg font-bold py-3.5 md:py-4 rounded-xl transition-all text-[10px] uppercase tracking-widest hover:-translate-y-0.5">Voir les dates</button>
+                        {isSingleDate && singleFlight ? (
+                          <button onClick={() => window.open(singleFlight.booking_url, '_blank')} className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg font-bold py-3.5 md:py-4 rounded-xl transition-all text-[10px] uppercase tracking-widest hover:-translate-y-0.5">Réserver</button>
+                        ) : (
+                          <button onClick={() => setSelectedDeal(deal)} className="w-full bg-slate-900 hover:bg-blue-700 text-white shadow-lg font-bold py-3.5 md:py-4 rounded-xl transition-all text-[10px] uppercase tracking-widest hover:-translate-y-0.5">Voir les dates</button>
+                        )}
                       </div>
                     </div>
                   </div>
