@@ -114,8 +114,7 @@ const CaptureForm = ({ navigate }) => {
             className={`w-full bg-transparent font-bold outline-none cursor-pointer text-sm appearance-none truncate ${departureInput ? 'text-slate-800' : 'text-slate-400'}`}
           >
             <option value="" disabled>Aéroport de départ ?</option>
-            <option value="CDG">Paris - CDG</option>
-            <option value="ORY">Paris - Orly</option>
+            <option value="PAR">Paris (Tous les aéroports)</option>
             <option value="TLS">Toulouse - Blagnac</option>
             <option value="LYS">Lyon - St Exupéry</option>
             <option value="NCE">Nice - Côte d'Azur</option>
