@@ -289,13 +289,25 @@ export default function VolsPasChers() {
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] font-sans antialiased text-slate-900 overflow-x-hidden">
       
-      {/* HEADER CORRIGÉ (Logo protégé avec shrink-0) */}
+      {/* HEADER CORRIGÉ */}
       <header className="fixed top-0 left-0 right-0 h-20 px-4 md:px-8 flex items-center justify-between z-50 bg-white/90 backdrop-blur-xl border-b border-slate-100">
         
-        {/* LOGO */}
-        <div className="flex items-center gap-2 cursor-pointer shrink-0" onClick={() => window.location.href="/"}>
-          <Target className="text-blue-600 shrink-0" size={24} strokeWidth={2.5} />
-          <span className="text-xl font-black tracking-tight text-slate-900 whitespace-nowrap">Fly<span className="text-blue-600">Radar</span></span>
+        {/* LOGO ET INDICATEUR LIVE (Harmonisé avec l'Accueil) */}
+        <div className="flex items-center gap-4 shrink-0">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
+            <Target className="text-blue-600" size={24} strokeWidth={2.5} />
+            <span className="text-xl md:text-2xl tracking-tight text-slate-900 whitespace-nowrap">
+              <span className="font-bold">Fly</span><span className="font-bold text-blue-600">Radar</span>
+            </span>
+          </div>
+          
+          <div className="hidden md:flex items-center gap-2">
+            <div className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-green-600">Live</span>
+          </div>
         </div>
         
         {/* BOUTONS DE DROITE */}
