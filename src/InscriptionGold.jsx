@@ -41,7 +41,7 @@ export default function InscriptionGold() {
       // 3. Choix du bon lien Stripe selon le plan sélectionné
       let baseStripeUrl = '';
       if (plan === 'monthly') {
-        baseStripeUrl = 'https://buy.stripe.com/test_aFa28q4TC4VA9aN0D6eQM00'; 
+        baseStripeUrl = 'https://buy.stripe.com/aFa28q4TC4VA9aN0D6eQM00'; 
       } else {
         // 👇 C'EST ICI QU'IL FAUT METTRE TON LIEN ANNUEL 👇
         baseStripeUrl = 'https://buy.stripe.com/bJe7sK5XGafU5YBgC4eQM01'; 
