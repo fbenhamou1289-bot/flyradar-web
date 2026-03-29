@@ -1,6 +1,6 @@
 import React from 'react';
 
-// Icône Cible (Target) telle que définie dans votre inspecteur
+// Icône Cible (Target)
 const TargetIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-target text-blue-600">
     <circle cx="12" cy="12" r="10" />
@@ -9,11 +9,11 @@ const TargetIcon = () => (
   </svg>
 );
 
-// Icône Flèche vers la gauche (ArrowLeft) pour le bouton de retour
+// Icône Flèche vers la gauche corrigée !
 const ArrowLeftIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left">
     <line x1="19" y1="12" x2="5" y2="12" />
-    <polyline points="12" y1="19" x2="5" y2="12" <polyline points="12" y1="5" x2="5" y2="12" />
+    <polyline points="12 19 5 12 12 5" />
   </svg>
 );
 
@@ -24,12 +24,12 @@ export default function MentionsLegales() {
       {/* Container Principal pour le centrage et le padding */}
       <div className="py-16 md:py-24 px-4">
         
-        {/* La Carte Centrale (style FlyRadar pro, épurée) */}
+        {/* La Carte Centrale */}
         <div className="max-w-4xl mx-auto bg-white p-10 md:p-14 rounded-3xl shadow-xl shadow-slate-100 border border-slate-100">
           
-          {/* En-tête de la page avec VOTRE LOGO EXACT */}
+          {/* En-tête de la page avec TON LOGO EXACT */}
           <div className="border-b border-slate-100 pb-10 mb-12">
-            <div className="flex items-center gap-2 cursor-pointer mb-6">
+            <div className="flex items-center gap-2 cursor-pointer mb-6" onClick={() => window.history.back()}>
               <TargetIcon />
               <span className="text-xl md:text-2xl tracking-tight text-slate-900">
                 <span className="font-bold">Fly</span><span className="font-bold text-blue-600">Radar</span>
@@ -101,7 +101,7 @@ export default function MentionsLegales() {
 
           </div>
 
-          {/* Pied de page de la carte avec bouton de retour épuré */}
+          {/* Pied de page de la carte avec bouton de retour */}
           <div className="mt-16 md:mt-20 pt-10 border-t border-slate-100">
             <button 
               onClick={() => window.history.back()} 
