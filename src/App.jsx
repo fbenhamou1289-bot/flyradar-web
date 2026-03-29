@@ -5,6 +5,7 @@ import SuccesPaiement from './SuccesPaiement';
 import Contact from './Contact';
 import Connexion from './Connexion';
 import InscriptionGold from './InscriptionGold';
+import CGV from './CGV';
 import Desabonnement from './Desabonnement';
 import MentionsLegales from './MentionsLegales';
 import PolitiqueConfidentialite from './PolitiqueConfidentialite';
@@ -507,6 +508,7 @@ export default function App() {
         <Route path="/succes" element={<SuccesPaiement />} />
         <Route path="/confidentialite" element={<PolitiqueConfidentialite />} />
         <Route path="/mentions-legales" element={<MentionsLegales />} />
+        <Route path="/cgv" element={<CGV />} />
         <Route path="/desabonnement" element={<Desabonnement />} />
       </Routes>
     </BrowserRouter>
