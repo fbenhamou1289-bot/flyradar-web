@@ -413,104 +413,130 @@ export default function VolsPasChers() {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredDeals.map((deal) => {
-              const isRareLocked = deal.dealType === 'rare' && !isGoldUser; 
-              const isTimeLocked = deal.isTimeLocked && !isGoldUser;
-              const isLocked = isRareLocked || isTimeLocked;
-              
-              // CORRECTION 2 : Vérification du nombre de dates
-              const isSingleDate = deal.count_dates === 1;
-              const singleFlight = deal.all_flights[0];
+          {/* AFFICHAGE DES DEALS OU MESSAGE VIDE */}
+          {filteredDeals.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredDeals.map((deal) => {
+                const isRareLocked = deal.dealType === 'rare' && !isGoldUser; 
+                const isTimeLocked = deal.isTimeLocked && !isGoldUser;
+                const isLocked = isRareLocked || isTimeLocked;
+                
+                // CORRECTION 2 : Vérification du nombre de dates
+                const isSingleDate = deal.count_dates === 1;
+                const singleFlight = deal.all_flights[0];
 
-              return (
-                <div key={deal.id} className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm flex flex-col h-full group hover:shadow-md transition-all relative">
-                  
-                  {isLocked && (
-                    <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 text-center">
-                      
-                      {isRareLocked ? (
-                        <div className="border-[3px] border-red-500 text-red-500 font-black text-2xl px-5 py-1.5 rotate-[-12deg] uppercase rounded-xl bg-white shadow-2xl mb-5">ERREUR</div>
-                      ) : (
-                        <div className="border-[3px] border-blue-500 text-blue-500 font-black text-xl px-5 py-1.5 rotate-[-5deg] uppercase rounded-xl bg-white shadow-2xl mb-5 text-center leading-tight">
-                          Dispo dans<br/>{Math.max(1, Math.ceil(4 - deal.ageInHours))}H
-                        </div>
-                      )}
-                      
-                      <button onClick={() => navigate('/inscription-gold')} className="bg-amber-500 hover:bg-amber-400 text-white font-black px-6 py-3.5 rounded-xl flex items-center gap-2 text-xs shadow-xl uppercase tracking-widest transition-transform hover:scale-105 active:scale-95">
-                        <Crown size={18} /> Débloquer
-                      </button>
-                    </div>
-                  )}
-
-                  <div className={`flex flex-col h-full ${isLocked ? 'blur-md select-none opacity-40 grayscale-[30%]' : ''}`}>
-                    <div className="relative h-48 overflow-hidden bg-slate-100 shrink-0">
-                      <div className={`absolute top-4 left-4 px-3 py-1.5 rounded-lg font-black text-[8px] uppercase tracking-widest shadow-md z-10 ${getBadgeStyle(deal.dealType)}`}>{getBadgeLabel(deal.dealType)}</div>
-                      <div className={`absolute top-4 right-4 px-3 py-1.5 rounded-lg font-black text-[10px] shadow-md z-10 ${getBadgeStyle(deal.dealType)}`}>-{deal.discount}%</div>
-                      
-                      <img 
-                        src={deal.image} 
-                        onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'; }}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                        alt={deal.destination} 
-                      />
-                    </div>
+                return (
+                  <div key={deal.id} className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm flex flex-col h-full group hover:shadow-md transition-all relative">
                     
-                    <div className="p-6 md:p-8 flex flex-col flex-1">
-                      <div className="mb-4">
-                        <h3 className="font-extrabold text-slate-900 text-2xl md:text-2xl tracking-tight mb-1">{deal.destination}</h3>
-                        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">
-                          <span>{deal.origine_code}</span>
-                          <div className="w-6 h-[1px] bg-slate-200 shrink-0"></div>
-                          <span>{deal.destination_code}</span>
-                        </div>
+                    {isLocked && (
+                      <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 text-center">
+                        
+                        {isRareLocked ? (
+                          <div className="border-[3px] border-red-500 text-red-500 font-black text-2xl px-5 py-1.5 rotate-[-12deg] uppercase rounded-xl bg-white shadow-2xl mb-5">ERREUR</div>
+                        ) : (
+                          <div className="border-[3px] border-blue-500 text-blue-500 font-black text-xl px-5 py-1.5 rotate-[-5deg] uppercase rounded-xl bg-white shadow-2xl mb-5 text-center leading-tight">
+                            Dispo dans<br/>{Math.max(1, Math.ceil(4 - deal.ageInHours))}H
+                          </div>
+                        )}
+                        
+                        <button onClick={() => navigate('/inscription-gold')} className="bg-amber-500 hover:bg-amber-400 text-white font-black px-6 py-3.5 rounded-xl flex items-center gap-2 text-xs shadow-xl uppercase tracking-widest transition-transform hover:scale-105 active:scale-95">
+                          <Crown size={18} /> Débloquer
+                        </button>
+                      </div>
+                    )}
+
+                    <div className={`flex flex-col h-full ${isLocked ? 'blur-md select-none opacity-40 grayscale-[30%]' : ''}`}>
+                      <div className="relative h-48 overflow-hidden bg-slate-100 shrink-0">
+                        <div className={`absolute top-4 left-4 px-3 py-1.5 rounded-lg font-black text-[8px] uppercase tracking-widest shadow-md z-10 ${getBadgeStyle(deal.dealType)}`}>{getBadgeLabel(deal.dealType)}</div>
+                        <div className={`absolute top-4 right-4 px-3 py-1.5 rounded-lg font-black text-[10px] shadow-md z-10 ${getBadgeStyle(deal.dealType)}`}>-{deal.discount}%</div>
+                        
+                        <img 
+                          src={deal.image} 
+                          onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'; }}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                          alt={deal.destination} 
+                        />
                       </div>
                       
-                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mb-4">
-                        {deal.fullAirlineName} {(deal.stops > 0 && deal.stops !== null) ? '+ AUTRES' : ''}
-                      </p>
-                      
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-5 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                        <div className="flex items-center gap-1.5 whitespace-nowrap">
-                          <Calendar size={12} className="text-blue-500 shrink-0"/> 
+                      <div className="p-6 md:p-8 flex flex-col flex-1">
+                        <div className="mb-4">
+                          <h3 className="font-extrabold text-slate-900 text-2xl md:text-2xl tracking-tight mb-1">{deal.destination}</h3>
+                          <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">
+                            <span>{deal.origine_code}</span>
+                            <div className="w-6 h-[1px] bg-slate-200 shrink-0"></div>
+                            <span>{deal.destination_code}</span>
+                          </div>
+                        </div>
+                        
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mb-4">
+                          {deal.fullAirlineName} {(deal.stops > 0 && deal.stops !== null) ? '+ AUTRES' : ''}
+                        </p>
+                        
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-5 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                          <div className="flex items-center gap-1.5 whitespace-nowrap">
+                            <Calendar size={12} className="text-blue-500 shrink-0"/> 
+                            {isSingleDate && singleFlight ? (
+                              singleFlight.return_date 
+                                ? `${new Date(singleFlight.dates).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} - ${new Date(singleFlight.return_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`
+                                : `${new Date(singleFlight.dates).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`
+                            ) : (
+                              `${deal.count_dates} dates dispos`
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1.5 whitespace-nowrap">
+                            {deal.stops === null ? '' : (deal.stops == 0 || deal.stops === '0' ? 'Vol Direct' : `${deal.stops} Escale(s)`)}
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-col mb-6 mt-auto">
+                          <div className="flex items-baseline gap-2">
+                            <span className="font-black text-slate-900 text-3xl md:text-4xl tracking-tighter">{deal.price}€</span>
+                            <span className="text-[10px] text-slate-400 font-bold whitespace-nowrap">vs <span className="line-through text-slate-700">{deal.average_price}€</span></span>
+                          </div>
+                          <div className="mt-2.5 flex justify-end items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest w-full">
+                            <Target size={12} className="text-blue-600 shrink-0" />
+                            <span className="text-slate-500">Score :</span>
+                            <span className="text-slate-900 font-black">{deal.deal_score}<span className="text-slate-400 font-normal">/10</span></span>
+                          </div>
+                        </div>
+
+                        <div className="mt-auto pt-5 border-t border-slate-100">
                           {isSingleDate && singleFlight ? (
-                            singleFlight.return_date 
-                              ? `${new Date(singleFlight.dates).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} - ${new Date(singleFlight.return_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`
-                              : `${new Date(singleFlight.dates).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`
+                            <button onClick={() => window.open(singleFlight.booking_url, '_blank')} className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg font-bold py-3.5 md:py-4 rounded-xl transition-all text-[10px] uppercase tracking-widest hover:-translate-y-0.5">Réserver</button>
                           ) : (
-                            `${deal.count_dates} dates dispos`
+                            <button onClick={() => setSelectedDeal(deal)} className="w-full bg-slate-900 hover:bg-blue-700 text-white shadow-lg font-bold py-3.5 md:py-4 rounded-xl transition-all text-[10px] uppercase tracking-widest hover:-translate-y-0.5">Voir les dates</button>
                           )}
                         </div>
-                        <div className="flex items-center gap-1.5 whitespace-nowrap">
-                          {deal.stops === null ? '' : (deal.stops == 0 || deal.stops === '0' ? 'Vol Direct' : `${deal.stops} Escale(s)`)}
-                        </div>
-                      </div>
-                      
-                      <div className="flex flex-col mb-6 mt-auto">
-                        <div className="flex items-baseline gap-2">
-                          <span className="font-black text-slate-900 text-3xl md:text-4xl tracking-tighter">{deal.price}€</span>
-                          <span className="text-[10px] text-slate-400 font-bold whitespace-nowrap">vs <span className="line-through text-slate-700">{deal.average_price}€</span></span>
-                        </div>
-                        <div className="mt-2.5 flex justify-end items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest w-full">
-                          <Target size={12} className="text-blue-600 shrink-0" />
-                          <span className="text-slate-500">Score :</span>
-                          <span className="text-slate-900 font-black">{deal.deal_score}<span className="text-slate-400 font-normal">/10</span></span>
-                        </div>
-                      </div>
-
-                      <div className="mt-auto pt-5 border-t border-slate-100">
-                        {isSingleDate && singleFlight ? (
-                          <button onClick={() => window.open(singleFlight.booking_url, '_blank')} className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg font-bold py-3.5 md:py-4 rounded-xl transition-all text-[10px] uppercase tracking-widest hover:-translate-y-0.5">Réserver</button>
-                        ) : (
-                          <button onClick={() => setSelectedDeal(deal)} className="w-full bg-slate-900 hover:bg-blue-700 text-white shadow-lg font-bold py-3.5 md:py-4 rounded-xl transition-all text-[10px] uppercase tracking-widest hover:-translate-y-0.5">Voir les dates</button>
-                        )}
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          ) : (
+            /* MESSAGE QUAND AUCUN VOL N'EST TROUVÉ */
+            <div className="flex flex-col items-center justify-center bg-white rounded-[2rem] border border-slate-100 p-12 text-center shadow-sm w-full py-20 mt-4">
+              <div className="w-24 h-24 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-6">
+                <Radar size={48} className="animate-[spin_4s_linear_infinite]" />
+              </div>
+              <h3 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">Le radar est calme sur cette zone.</h3>
+              <p className="text-slate-500 font-medium max-w-md text-lg leading-relaxed">
+                Nos agents n'ont détecté aucune pépite correspondant à vos critères pour le moment.
+              </p>
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setBudget(2000);
+                  setDeparture('all');
+                  setActiveRegion('all');
+                  setDealFilters({ good: true, super: true, rare: true });
+                }}
+                className="mt-8 bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-8 rounded-xl transition-colors text-xs uppercase tracking-widest shadow-lg active:scale-95"
+              >
+                Réinitialiser les filtres
+              </button>
+            </div>
+          )}
         </div>
       </main>
 
