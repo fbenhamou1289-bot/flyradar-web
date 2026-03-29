@@ -8,6 +8,14 @@ const faqData = [
     answer: "Nos agents traquent les erreurs de prix et les baisses de tarifs secrètes au départ de votre aéroport. Si vous avez un compte gratuit, vous recevrez une alerte hebdomadaire par email contenant les 3 meilleures offres de la semaine. Vous pouvez également consulter nos autres trouvailles sur la page 'Offres en direct' du site (avec un délai de 4h). Pour réserver, il suffit de cliquer sur l'offre : vous serez redirigé vers la plateforme partenaire pour finaliser l'achat."
   },
   {
+    question: "Comment sont calculés les scores des offres (sur 10) ?",
+    answer: "Le score FlyRadar est un indicateur de rareté exclusif calculé par notre algorithme. Il prend en compte 4 critères majeurs : l'importance de la réduction par rapport au prix moyen habituel, la qualité du trajet (vol direct ou escales courtes), l'attractivité de la période (haute saison, vacances), et la fiabilité de la compagnie. Un score supérieur à 8,5/10 indique une offre exceptionnelle qui risque d'expirer dans les minutes qui suivent."
+  },
+  {
+    question: "Pourquoi le prix sur le site de réservation est parfois différent de l'alerte ?",
+    answer: "C'est la dure loi de l'aérien : les prix changent en temps réel en fonction de l'offre et de la demande (le 'yield management'). Si, en cliquant sur notre lien, le prix a augmenté sur le site de la compagnie, c'est que l'erreur tarifaire a été corrigée ou que les derniers sièges à ce prix ont été vendus. C'est pour cette raison que la réactivité est cruciale, et c'est tout l'intérêt des alertes instantanées de notre abonnement Gold !"
+  },
+  {
     question: "Puis-je demander une destination ou des dates précises ?",
     answer: "Non, car nos agents traquent les baisses de prix imprévisibles. Cependant, sur notre page 'Offres en direct', vous avez la possibilité de filtrer les résultats par continent pour n'afficher que les offres qui correspondent à vos envies de voyage."
   },
@@ -83,13 +91,13 @@ export default function Aide() {
         </div>
 
         <div className="flex items-center gap-3 md:gap-4 lg:gap-5">
-        <button onClick={() => navigate('/connexion')} className="flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors">
-  <User size={16} /> Connexion
-</button>
+          <button onClick={() => navigate('/connexion')} className="flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors">
+            <User size={16} /> Connexion
+          </button>
 
-<button onClick={() => navigate('/')} className="flex items-center gap-1.5 text-sm font-bold text-slate-700 hover:text-slate-900 transition-colors border border-slate-300 px-4 py-2 rounded-full hover:bg-slate-50">
-  <ArrowLeft size={16} /> Retour à l'accueil
-</button>
+          <button onClick={() => navigate('/')} className="flex items-center gap-1.5 text-sm font-bold text-slate-700 hover:text-slate-900 transition-colors border border-slate-300 px-4 py-2 rounded-full hover:bg-slate-50 hidden md:flex">
+            <ArrowLeft size={16} /> Retour à l'accueil
+          </button>
           
           <button onClick={() => navigate('/inscription-gold')} className="text-xs md:text-sm font-bold text-white bg-amber-500 hover:bg-amber-400 transition-colors border border-amber-600/20 px-4 py-2 rounded-full flex items-center gap-1.5 shadow-sm">
             <Crown size={16} /> Go Gold
@@ -123,11 +131,11 @@ export default function Aide() {
               Notre équipe est disponible pour mettre à jour votre profil ou répondre à vos questions concernant l'abonnement Gold.
             </p>
             <button 
-  onClick={() => navigate('/contact')}
-  className="w-full sm:w-auto bg-white text-slate-900 font-black py-4 px-8 rounded-xl hover:bg-slate-100 transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs shadow-lg shadow-white/10 hover:scale-105 active:scale-95 mx-auto"
->
-  Contactez-nous
-</button>
+              onClick={() => navigate('/contact')}
+              className="w-full sm:w-auto bg-white text-slate-900 font-black py-4 px-8 rounded-xl hover:bg-slate-100 transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs shadow-lg shadow-white/10 hover:scale-105 active:scale-95 mx-auto"
+            >
+              Contactez-nous
+            </button>
           </div>
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-500 rounded-full blur-[80px] opacity-20 pointer-events-none"></div>
           <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-amber-500 rounded-full blur-[80px] opacity-20 pointer-events-none"></div>
