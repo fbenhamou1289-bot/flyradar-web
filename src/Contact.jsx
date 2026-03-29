@@ -30,7 +30,7 @@ export default function Contact() {
       setIsSent(true);
     } catch (error) {
       console.error("Erreur d'envoi du message:", error);
-      alert("L'erreur exacte de Supabase est : " + error.message);
+      alert("Une erreur est survenue lors de l'envoi. Veuillez réessayer.");
     } finally {
       setIsLoading(false);
     }
