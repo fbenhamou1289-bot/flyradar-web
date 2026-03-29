@@ -7,6 +7,7 @@ import Connexion from './Connexion';
 import InscriptionGold from './InscriptionGold';
 import Desabonnement from './Desabonnement';
 import MentionsLegales from './MentionsLegales';
+import PolitiqueConfidentialite from './PolitiqueConfidentialite';
 import { Target, ArrowRight, MapPin, Radar, Server, Zap, Crown, Check, Star, AlertCircle, CheckCircle2, User, HelpCircle } from 'lucide-react';
 import VolsPasChers, { supabase } from './VolsPasChers';
 
@@ -504,6 +505,7 @@ export default function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/connexion" element={<Connexion />} />
         <Route path="/succes" element={<SuccesPaiement />} />
+        <Route path="/confidentialite" element={<PolitiqueConfidentialite />} />
         <Route path="/mentions-legales" element={<MentionsLegales />} />
         <Route path="/desabonnement" element={<Desabonnement />} />
       </Routes>
