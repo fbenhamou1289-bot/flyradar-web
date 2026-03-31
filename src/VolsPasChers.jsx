@@ -46,6 +46,9 @@ export default function VolsPasChers() {
   // -- ÉTAT POUR MOBILE --
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   
+  // -- ÉTAT POUR LA MODALE DE REDIRECTION --
+  const [redirectUrl, setRedirectUrl] = useState(null);
+  
   const [vipAirports, setVipAirports] = useState([]);
   
   const availableAirports = [
@@ -502,7 +505,7 @@ export default function VolsPasChers() {
 
                         <div className="mt-auto pt-5 border-t border-slate-100">
                           {isSingleDate && singleFlight ? (
-                            <button onClick={() => window.open(singleFlight.booking_url, '_blank')} className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg font-bold py-3.5 md:py-4 rounded-xl transition-all text-[10px] uppercase tracking-widest hover:-translate-y-0.5">Réserver</button>
+                            <button onClick={() => setRedirectUrl(singleFlight.booking_url)} className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg font-bold py-3.5 md:py-4 rounded-xl transition-all text-[10px] uppercase tracking-widest hover:-translate-y-0.5">Réserver</button>
                           ) : (
                             <button onClick={() => setSelectedDeal(deal)} className="w-full bg-slate-900 hover:bg-blue-700 text-white shadow-lg font-bold py-3.5 md:py-4 rounded-xl transition-all text-[10px] uppercase tracking-widest hover:-translate-y-0.5">Voir les dates</button>
                           )}
@@ -581,7 +584,7 @@ export default function VolsPasChers() {
                         <span className="font-black text-2xl text-blue-600">{flight.price}€</span>
                       </div>
                       <button 
-                        onClick={() => window.open(flight.booking_url, '_blank')} 
+                        onClick={() => setRedirectUrl(flight.booking_url)} 
                         className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl transition-all text-[10px] uppercase tracking-widest shadow-md hover:-translate-y-0.5 hover:shadow-xl"
                       >
                         Réserver
@@ -732,6 +735,48 @@ export default function VolsPasChers() {
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl uppercase tracking-widest text-xs shadow-lg shadow-blue-600/20"
               >
                 Appliquer les filtres
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* --- MODALE DE TRANSITION (DÉPART VERS AVIASALES) --- */}
+      {redirectUrl && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+          <div className="w-full max-w-md bg-white rounded-[2.5rem] overflow-hidden flex flex-col relative shadow-2xl animate-in zoom-in-95 duration-300 p-8 text-center border border-slate-100">
+            
+            <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Plane size={36} className="ml-2" />
+            </div>
+            
+            <h2 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">Préparation au décollage !</h2>
+            
+            <p className="text-slate-500 font-medium text-sm leading-relaxed mb-8">
+              Vous allez être redirigé vers notre partenaire sécurisé pour finaliser votre réservation au meilleur prix.
+              <br/><br/>
+              <span className="font-bold text-slate-900 bg-slate-100 px-4 py-2 rounded-xl text-xs flex flex-col gap-1">
+                <span className="text-blue-600 uppercase tracking-widest text-[9px]">💡 Pour revenir sur FlyRadar :</span>
+                Il vous suffira de fermer l'onglet de réservation !
+              </span>
+            </p>
+            
+            <div className="flex flex-col gap-3">
+              <button 
+                onClick={() => {
+                  window.open(redirectUrl, '_blank');
+                  setRedirectUrl(null);
+                }} 
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg font-black py-4 rounded-xl transition-all text-[11px] uppercase tracking-widest hover:-translate-y-0.5"
+              >
+                Continuer vers la réservation
+              </button>
+              <button 
+                onClick={() => setRedirectUrl(null)} 
+                className="w-full bg-white hover:bg-slate-50 text-slate-400 hover:text-slate-600 font-bold py-4 rounded-xl transition-all text-[11px] uppercase tracking-widest border border-slate-100"
+              >
+                Annuler
               </button>
             </div>
 
