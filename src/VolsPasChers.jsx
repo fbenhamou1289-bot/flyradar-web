@@ -754,11 +754,11 @@ export default function VolsPasChers() {
             <h2 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">Préparation au décollage !</h2>
             
             <p className="text-slate-500 font-medium text-sm leading-relaxed mb-8">
-              Vous allez être redirigé vers notre partenaire sécurisé pour finaliser votre réservation au meilleur prix. Attention : les prix de l'aérien étant très dynamiques, il arrive que la compagnie ait légèrement mis à jour son tarif depuis notre dernière détection
+              Vous allez être redirigé vers notre partenaire sécurisé pour finaliser votre réservation au meilleur prix.
               <br/><br/>
               <span className="font-bold text-slate-900 bg-slate-100 px-4 py-2 rounded-xl text-xs flex flex-col gap-1">
-                <span className="text-blue-600 uppercase tracking-widest text-[9px]">💡 Pour revenir sur FlyRadar :</span>
-                Il vous suffira de fermer l'onglet de réservation !
+                <span className="text-blue-600 uppercase tracking-widest text-[9px]">💡 Attention :</span>
+                 Les prix de l'aérien étant très dynamiques, il arrive que la compagnie ait légèrement mis à jour son tarif depuis notre dernière détection !
               </span>
             </p>
             
