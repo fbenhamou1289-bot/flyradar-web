@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-ro
 import Aide from './Aide';
 import SuccesPaiement from './SuccesPaiement';
 import Contact from './Contact';
+import Conciergerie from './Conciergerie';
 import Connexion from './Connexion';
 import InscriptionGold from './InscriptionGold';
 import CGV from './CGV';
@@ -509,6 +510,7 @@ export default function App() {
         <Route path="/confidentialite" element={<PolitiqueConfidentialite />} />
         <Route path="/mentions-legales" element={<MentionsLegales />} />
         <Route path="/cgv" element={<CGV />} />
+        <Route path="/conciergerie" element={<Conciergerie />} />
         <Route path="/desabonnement" element={<Desabonnement />} />
       </Routes>
     </BrowserRouter>
