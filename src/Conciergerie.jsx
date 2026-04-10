@@ -35,7 +35,7 @@ export default function Conciergerie() {
       setSuccess(true);
     } catch (error) {
       console.error("Erreur :", error);
-      alert("Une erreur est survenue. Vérifiez votre connexion.");
+      alert("Une erreur est survenue. Veuillez vérifier votre connexion.");
     } finally {
       setIsSubmitting(false);
     }
@@ -50,7 +50,7 @@ export default function Conciergerie() {
           </div>
           <h2 className="text-2xl font-black text-slate-900 mb-4">Dossier reçu !</h2>
           <p className="text-slate-500 mb-8">
-            Vos critères sont validés. (Simulation : Redirection vers le paiement à venir).
+            Vos critères sont validés. Nos agents prennent le relais. (Simulation : Redirection vers le paiement du dépôt à venir).
           </p>
           <button onClick={() => navigate('/')} className="bg-blue-600 text-white font-bold py-4 px-8 rounded-xl w-full hover:bg-blue-700 transition-colors">
             Retour à l'accueil
@@ -74,103 +74,107 @@ export default function Conciergerie() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <main className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
         
-        {/* COLONNE GAUCHE : MESSAGE DIRECT */}
-        <div>
+        {/* COLONNE GAUCHE : MESSAGE DIRECT AVEC ENCARTS BLANCS */}
+        <div className="lg:sticky lg:top-28">
           <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 font-bold text-[11px] uppercase tracking-widest px-4 py-2 rounded-full mb-6">
             <Target size={14} /> Service Conciergerie
           </div>
           
-          <h1 className="text-4xl lg:text-5xl font-black leading-tight mb-6">
-            Ne cherchez plus.<br/>Nos agents le font pour vous.
+          <h1 className="text-4xl lg:text-5xl font-black leading-tight mb-8">
+            <span className="text-blue-600">Ne cherchez plus.</span><br/>
+            Nos agents le font pour vous.
           </h1>
-          <p className="text-lg text-slate-500 mb-10 leading-relaxed">
-            Déléguez votre recherche à nos experts. Nous avons les outils professionnels pour dénicher les meilleures failles tarifaires.
+          <p className="text-lg text-slate-500 mb-12 leading-relaxed">
+            Déléguez votre recherche à nos experts. Nous utilisons des outils professionnels pour dénicher les meilleures failles tarifaires et optimiser votre budget.
           </p>
 
-          <div className="space-y-8">
-            <div className="flex gap-4">
-              <div className="text-blue-600 mt-1"><UserCheck size={24} /></div>
+          {/* LES ÉTAPES DANS DES ENCARTS BLANCS SEPARÉS */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-1 gap-6 mb-12">
+            
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex gap-4 items-center lg:items-start transition-all hover:shadow-md">
+              <div className="text-blue-600 mt-0.5 shrink-0"><UserCheck size={28} strokeWidth={2.5} /></div>
               <div>
-                <h4 className="font-bold text-lg">1. Dépôt (9,90€)</h4>
-                <p className="text-slate-500 text-sm mt-1">Active immédiatement un agent sur votre dossier.</p>
+                <h4 className="font-bold text-lg text-slate-950">1. Dépôt (9,90€)</h4>
+                <p className="text-slate-600 text-sm mt-1">Un filtre sécurisé qui active immédiatement un agent sur votre dossier.</p>
               </div>
             </div>
             
-            <div className="flex gap-4">
-              <div className="text-blue-600 mt-1"><Clock size={24} /></div>
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex gap-4 items-center lg:items-start transition-all hover:shadow-md">
+              <div className="text-blue-600 mt-0.5 shrink-0"><Clock size={28} strokeWidth={2.5} /></div>
               <div>
-                <h4 className="font-bold text-lg">2. La Traque (72h)</h4>
-                <p className="text-slate-500 text-sm mt-1">Nous scannons en continu pour trouver le vol parfait.</p>
+                <h4 className="font-bold text-lg text-slate-950">2. La Traque (72h max)</h4>
+                <p className="text-slate-600 text-sm mt-1">Nos experts scannent en continu les bases professionnelles pour trouver le vol parfait.</p>
               </div>
             </div>
 
-            <div className="flex gap-4">
-              <div className="text-blue-600 mt-1"><Check size={24} /></div>
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex gap-4 items-center lg:items-start transition-all hover:shadow-md">
+              <div className="text-blue-600 mt-0.5 shrink-0"><Check size={28} strokeWidth={2.5} /></div>
               <div>
-                <h4 className="font-bold text-lg">3. Succès (29€)</h4>
-                <p className="text-slate-500 text-sm mt-1">Ne payez le solde que si nous trouvons votre vol.</p>
+                <h4 className="font-bold text-lg text-slate-950">3. Succès (29€)</h4>
+                <p className="text-slate-600 text-sm mt-1">Garantie de résultat. Vous ne réglez le solde que si notre mission est accomplie.</p>
               </div>
             </div>
+            
           </div>
 
-          <div className="mt-10 bg-blue-50 border border-blue-100 p-4 rounded-xl flex items-start gap-3">
-            <ShieldCheck size={20} className="text-blue-600 shrink-0 mt-0.5" />
-            <p className="text-sm font-medium text-blue-900">
-              <strong>Garantie Confiance :</strong> En cas d'échec de nos agents après 72h, nous vous créditons une nouvelle recherche gratuite.
+          <div className="bg-blue-50 border border-blue-100 p-5 rounded-xl flex items-start gap-3.5">
+            <ShieldCheck size={24} className="text-blue-600 shrink-0 mt-0.5" />
+            <p className="text-sm font-medium text-blue-950 leading-relaxed">
+              <strong>Garantie Confiance :</strong> En cas d'échec de nos agents après 72h, nous vous créditons une nouvelle recherche gratuite. Aucun risque.
             </p>
           </div>
         </div>
 
-        {/* COLONNE DROITE : FORMULAIRE */}
-        <div className="bg-white p-8 md:p-10 rounded-[2rem] shadow-lg border border-slate-100">
-          <h3 className="text-xl font-black mb-8 text-center">Créez votre dossier</h3>
+        {/* COLONNE DROITE : FORMULAIRE CLAIR DANS SON ENCART */}
+        <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-lg border border-slate-100">
+          <h3 className="text-xl font-black mb-10 text-center text-slate-950">Briefez votre Agent Expert</h3>
           
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">Départ</label>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">D'où partez-vous ?</label>
               <div className="relative">
-                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                <input type="text" required placeholder="Ex: Paris" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 font-bold outline-none focus:border-blue-600 focus:bg-white transition-all" onChange={e => setFormData({...formData, origine: e.target.value})} />
+                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                <input type="text" required placeholder="Ex: Paris CDG" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 pl-12 pr-4 font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" onChange={e => setFormData({...formData, origine: e.target.value})} />
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">Destination</label>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Quelle est votre destination ?</label>
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                <input type="text" required placeholder="Ex: Bali" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 font-bold outline-none focus:border-blue-600 focus:bg-white transition-all" onChange={e => setFormData({...formData, destination: e.target.value})} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                <input type="text" required placeholder="Ex: New York JFK" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 pl-12 pr-4 font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" onChange={e => setFormData({...formData, destination: e.target.value})} />
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">Dates</label>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Quelles sont vos dates ?</label>
               <div className="relative">
-                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                <input type="text" required placeholder="Ex: Août (Flexible)" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 font-bold outline-none focus:border-blue-600 focus:bg-white transition-all" onChange={e => setFormData({...formData, dates_flexibles: e.target.value})} />
+                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                <input type="text" required placeholder="Ex: Août (Flexible ±2 jours)" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 pl-12 pr-4 font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" onChange={e => setFormData({...formData, dates_flexibles: e.target.value})} />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">Budget Max / pers</label>
-                <input type="number" required placeholder="500€" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-bold outline-none focus:border-blue-600 focus:bg-white transition-all" onChange={e => setFormData({...formData, budget_max: e.target.value})} />
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Budget Max / personne</label>
+                <input type="number" required placeholder="500€" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 px-4 font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" onChange={e => setFormData({...formData, budget_max: e.target.value})} />
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">Passagers</label>
-                <select className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-bold outline-none focus:border-blue-600 focus:bg-white transition-all appearance-none cursor-pointer" onChange={e => setFormData({...formData, passagers: e.target.value})}>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Nombre de passagers</label>
+                <select className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 px-4 font-bold outline-none focus:border-blue-600 focus:bg-white transition-all appearance-none cursor-pointer shadow-inner" onChange={e => setFormData({...formData, passagers: e.target.value})}>
                   <option>1 Adulte</option>
                   <option>2 Adultes</option>
-                  <option>Famille</option>
+                  <option>Famille (3+)</option>
                 </select>
               </div>
             </div>
 
             {/* NOUVEAU CHAMP : ESCALES */}
             <div>
-              <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">Préférence d'escales</label>
-              <select className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-bold outline-none focus:border-blue-600 focus:bg-white transition-all appearance-none cursor-pointer" onChange={e => setFormData({...formData, preferences_escales: e.target.value})}>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Préférence de trajet</label>
+              <select className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 px-4 font-bold outline-none focus:border-blue-600 focus:bg-white transition-all appearance-none cursor-pointer shadow-inner" onChange={e => setFormData({...formData, preferences_escales: e.target.value})}>
                 <option>Peu importe (Meilleur prix)</option>
                 <option>1 escale maximum</option>
                 <option>Vol direct uniquement</option>
@@ -178,13 +182,16 @@ export default function Conciergerie() {
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">Email</label>
-              <input type="email" required placeholder="Pour recevoir le résultat" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-bold outline-none focus:border-blue-600 focus:bg-white transition-all" onChange={e => setFormData({...formData, client_email: e.target.value})} />
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Email de contact</label>
+              <input type="email" required placeholder="Pour recevoir le résultat" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 px-4 font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" onChange={e => setFormData({...formData, client_email: e.target.value})} />
             </div>
 
-            <button disabled={isSubmitting} type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl mt-4 transition-colors flex items-center justify-center gap-2 disabled:opacity-50">
-              {isSubmitting ? 'Envoi...' : <><Send size={18} /> Activer un agent</>}
+            <button disabled={isSubmitting} type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl mt-6 transition-colors shadow-lg flex items-center justify-center gap-2.5 disabled:opacity-50">
+              {isSubmitting ? 'Dossier en création...' : <><Send size={18} /> Activer mon Agent Expert</>}
             </button>
+            <div className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-4 flex items-center justify-center gap-2">
+              <ShieldCheck size={14} className="text-blue-500"/> Étape 1 sur 2 (Paiement du Dépôt sécurisé à venir)
+            </div>
           </form>
         </div>
 
