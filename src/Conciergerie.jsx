@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Target, Search, MapPin, Calendar, ArrowLeft, Check, ShieldCheck, UserCheck, Clock, Send } from 'lucide-react';
+import { Target, Search, MapPin, Calendar, ArrowLeft, Check, ShieldCheck, UserCheck, Clock, Send, CalendarDays } from 'lucide-react';
 import { supabase } from './VolsPasChers'; 
 
 export default function Conciergerie() {
@@ -10,7 +10,9 @@ export default function Conciergerie() {
   const [formData, setFormData] = useState({
     origine: '',
     destination: '',
-    dates_flexibles: '',
+    date_depart: '',
+    date_retour: '',
+    flexibilite: 'Dates exactes',
     passagers: '1 Adulte',
     budget_max: '',
     preferences_escales: 'Peu importe',
@@ -25,7 +27,9 @@ export default function Conciergerie() {
         client_email: formData.client_email,
         origine: formData.origine,
         destination: formData.destination,
-        dates_flexibles: formData.dates_flexibles,
+        date_depart: formData.date_depart,
+        date_retour: formData.date_retour,
+        flexibilite: formData.flexibilite,
         budget_max: parseInt(formData.budget_max),
         passagers: formData.passagers,
         preferences_escales: formData.preferences_escales,
@@ -62,8 +66,6 @@ export default function Conciergerie() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">
-      
-      {/* HEADER ÉPURÉ */}
       <header className="h-16 px-6 flex items-center justify-between bg-white border-b border-slate-200 sticky top-0 z-50">
         <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-slate-900 transition-colors">
           <ArrowLeft size={16} /> Retour
@@ -76,7 +78,6 @@ export default function Conciergerie() {
 
       <main className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
         
-        {/* COLONNE GAUCHE */}
         <div className="lg:sticky lg:top-24">
           <div className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-800 font-bold text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-full mb-5">
             <Target size={12} /> Service Conciergerie
@@ -90,9 +91,7 @@ export default function Conciergerie() {
             Déléguez votre recherche à nos experts. Nous utilisons des outils professionnels pour dénicher les meilleures failles tarifaires et optimiser votre budget.
           </p>
 
-          {/* ENCARTS BLANCS AFFINÉS */}
           <div className="grid grid-cols-1 gap-4 mb-10">
-            
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex gap-3.5 items-start transition-all hover:shadow-md">
               <div className="text-blue-600 mt-0.5 shrink-0"><UserCheck size={22} strokeWidth={2.5} /></div>
               <div>
@@ -100,7 +99,6 @@ export default function Conciergerie() {
                 <p className="text-slate-600 text-xs mt-1 leading-relaxed">Un filtre sécurisé qui active immédiatement un agent sur votre dossier.</p>
               </div>
             </div>
-            
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex gap-3.5 items-start transition-all hover:shadow-md">
               <div className="text-blue-600 mt-0.5 shrink-0"><Clock size={22} strokeWidth={2.5} /></div>
               <div>
@@ -108,7 +106,6 @@ export default function Conciergerie() {
                 <p className="text-slate-600 text-xs mt-1 leading-relaxed">Nos experts scannent en continu les bases professionnelles pour trouver le vol parfait.</p>
               </div>
             </div>
-
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex gap-3.5 items-start transition-all hover:shadow-md">
               <div className="text-blue-600 mt-0.5 shrink-0"><Check size={22} strokeWidth={2.5} /></div>
               <div>
@@ -116,7 +113,6 @@ export default function Conciergerie() {
                 <p className="text-slate-600 text-xs mt-1 leading-relaxed">Garantie de résultat. Vous ne réglez le solde que si notre mission est accomplie.</p>
               </div>
             </div>
-            
           </div>
 
           <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl flex items-start gap-3">
@@ -127,32 +123,53 @@ export default function Conciergerie() {
           </div>
         </div>
 
-        {/* COLONNE DROITE : FORMULAIRE AFFINÉ */}
         <div className="bg-white p-8 rounded-[2rem] shadow-lg border border-slate-100">
           <h3 className="text-lg font-black mb-8 text-center text-slate-950">Briefez votre Agent Expert</h3>
           
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">D'où partez-vous ?</label>
-              <div className="relative">
-                <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                <input type="text" required placeholder="Ex: Paris CDG" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" onChange={e => setFormData({...formData, origine: e.target.value})} />
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Ville de Départ</label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <input type="text" required placeholder="Ex: Paris" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" onChange={e => setFormData({...formData, origine: e.target.value})} />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Ville d'arrivée</label>
+                  <div className="relative">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <input type="text" required placeholder="Ex: Tokyo" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" onChange={e => setFormData({...formData, destination: e.target.value})} />
+                  </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Aller</label>
+                <div className="relative">
+                  <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                  <input type="date" required className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" onChange={e => setFormData({...formData, date_depart: e.target.value})} />
+                </div>
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Retour</label>
+                <div className="relative">
+                  <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                  <input type="date" required className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" onChange={e => setFormData({...formData, date_retour: e.target.value})} />
+                </div>
               </div>
             </div>
 
             <div>
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Quelle est votre destination ?</label>
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Flexibilité des dates</label>
               <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                <input type="text" required placeholder="Ex: New York JFK" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" onChange={e => setFormData({...formData, destination: e.target.value})} />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Quelles sont vos dates ?</label>
-              <div className="relative">
-                <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                <input type="text" required placeholder="Ex: Août (Flexible ±2 jours)" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" onChange={e => setFormData({...formData, dates_flexibles: e.target.value})} />
+                <CalendarDays className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                <select className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all appearance-none cursor-pointer shadow-inner" onChange={e => setFormData({...formData, flexibilite: e.target.value})}>
+                  <option>Dates exactes (Aucune flexibilité)</option>
+                  <option>± 1 jour (Recommandé)</option>
+                  <option>± 3 jours (Meilleurs tarifs)</option>
+                </select>
               </div>
             </div>
 
