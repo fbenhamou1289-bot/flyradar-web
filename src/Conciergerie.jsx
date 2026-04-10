@@ -13,6 +13,7 @@ export default function Conciergerie() {
     dates_flexibles: '',
     passagers: '1 Adulte',
     budget_max: '',
+    preferences_escales: 'Peu importe',
     client_email: ''
   });
 
@@ -27,13 +28,14 @@ export default function Conciergerie() {
         dates_flexibles: formData.dates_flexibles,
         budget_max: parseInt(formData.budget_max),
         passagers: formData.passagers,
+        preferences_escales: formData.preferences_escales,
         statut: 'en_attente'
       }]);
       if (error) throw error;
       setSuccess(true);
     } catch (error) {
       console.error("Erreur :", error);
-      alert("Une erreur est survenue.");
+      alert("Une erreur est survenue. Vérifiez votre connexion.");
     } finally {
       setIsSubmitting(false);
     }
@@ -121,7 +123,7 @@ export default function Conciergerie() {
           </div>
         </div>
 
-        {/* COLONNE DROITE : FORMULAIRE CLAIR ET ESPACÉ */}
+        {/* COLONNE DROITE : FORMULAIRE */}
         <div className="bg-white p-8 md:p-10 rounded-[2rem] shadow-lg border border-slate-100">
           <h3 className="text-xl font-black mb-8 text-center">Créez votre dossier</h3>
           
@@ -163,6 +165,16 @@ export default function Conciergerie() {
                   <option>Famille</option>
                 </select>
               </div>
+            </div>
+
+            {/* NOUVEAU CHAMP : ESCALES */}
+            <div>
+              <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">Préférence d'escales</label>
+              <select className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-bold outline-none focus:border-blue-600 focus:bg-white transition-all appearance-none cursor-pointer" onChange={e => setFormData({...formData, preferences_escales: e.target.value})}>
+                <option>Peu importe (Meilleur prix)</option>
+                <option>1 escale maximum</option>
+                <option>Vol direct uniquement</option>
+              </select>
             </div>
 
             <div>
