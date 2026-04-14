@@ -397,7 +397,7 @@ export default function Conciergerie() {
                 <Luggage size={20} className={formData.bagage_soute ? "text-blue-600" : "text-slate-400"} />
                 <div>
                   <div className="text-sm font-bold text-slate-900">Inclure un bagage en soute</div>
-                  <div className="text-[10px] text-slate-500 font-medium mt-0.5">Notre robot retirera un forfait d'environ 60€/vol pour chercher les prix.</div>
+                  <div className="text-[10px] text-slate-500 font-medium mt-0.5">Notre agent retirera un forfait d'environ 60€/vol pour chercher les prix.</div>
                 </div>
               </div>
               <div className={`w-6 h-6 rounded border flex items-center justify-center transition-colors ${formData.bagage_soute ? 'bg-blue-600 border-blue-600' : 'bg-white border-slate-300'}`}>
