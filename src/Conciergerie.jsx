@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Target, Search, MapPin, Calendar, ArrowLeft, Check, ShieldCheck, UserCheck, Clock, Send, CalendarDays, Luggage, AlertCircle, Loader2 } from 'lucide-react';
 import { supabase } from './VolsPasChers'; 
 
-// Liste locale pour l'autocomplétion (On garde la même liste pour l'UI)
 const DESTINATIONS_LIST = [
   { ville: "Paris - Charles de Gaulle", code: "CDG" },
   { ville: "Paris - Orly", code: "ORY" },
@@ -12,7 +11,7 @@ const DESTINATIONS_LIST = [
   { ville: "New York - JFK (USA)", code: "JFK" },
   { ville: "Tokyo - Haneda (Japon)", code: "HND" },
   { ville: "Dubaï (Emirats)", code: "DXB" },
-  // ... (Garde ta liste complète de 130+ ici)
+  // N'oublie pas de recoller ici tes 130 destinations si tu les as de côté
 ];
 
 export default function Conciergerie() {
@@ -20,7 +19,9 @@ export default function Conciergerie() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [seuils, setSeuils] = useState({}); // Stockage des prix planchers de Supabase
+  const [seuils, setSeuils] = useState({}); 
+  
+  const dateRetourRef = useRef(null);
   
   const [formData, setFormData] = useState({
     origine: '',
@@ -35,10 +36,10 @@ export default function Conciergerie() {
     client_email: ''
   });
 
-  // 📥 1. CHARGEMENT DES SEUILS PRO AU DÉMARRAGE
   useEffect(() => {
     async function chargerConfig() {
-      const { data } = await supabase.from('destinations_config').select('*');
+      const { data, error } = await supabase.from('destinations_config').select('*');
+      if (error) console.error("Erreur de lecture Supabase :", error);
       if (data) {
         const mapping = {};
         data.forEach(item => mapping[item.code_iata] = item.budget_mini);
@@ -48,25 +49,28 @@ export default function Conciergerie() {
     chargerConfig();
   }, []);
 
-  // ✂️ L'EXTRACTEUR DE CODE IATA
   const extraireIATA = (texte) => {
     const match = texte.match(/\(([A-Z]{3})\)/);
     return match ? match[1] : texte.trim().toUpperCase(); 
   };
 
-  // 🛡️ LE BOUCLIER PRO (Calcul identique au Robot)
   const validerMission = (destCode, budgetTotal, passagers, aBagage) => {
-    const fraisFlyRadar = 38.90; // 9.90 + 29
-    const provisionBagage = aBagage ? 60 : 0;
+    if (!seuils || Object.keys(seuils).length === 0) {
+      return "Le système de tarification est en cours de synchronisation. Veuillez patienter un instant ou recharger la page.";
+    }
+
+    if (!seuils[destCode]) {
+        return `Destination non reconnue par notre radar. Veuillez sélectionner une ville dans la liste déroulante.`;
+    }
     
-    // Calcul de ce qu'il reste vraiment pour le billet d'avion par personne
+    const fraisFlyRadar = 38.90; 
+    const provisionBagage = aBagage ? 120 : 0; 
     const budgetRestantParPers = (budgetTotal / passagers) - fraisFlyRadar - provisionBagage;
     
-    // On récupère le prix mini pour cette destination (ou 50€ par défaut)
-    const prixMiniRequis = seuils[destCode] || 50;
+    const prixMiniRequis = seuils[destCode]; 
 
     if (budgetRestantParPers < prixMiniRequis) {
-        return `Budget trop faible pour cette destination. Compte tenu des frais et options, il ne reste que ${Math.floor(budgetRestantParPers)}€ pour le billet, alors que le minimum constaté pour ${destCode} est de ${prixMiniRequis}€.`;
+        return `Budget trop faible. Après déduction de nos frais et du bagage A/R (120€), il ne reste que ${Math.floor(budgetRestantParPers)}€ pour le vol, alors que le minimum constaté pour ${destCode} est de ${prixMiniRequis}€.`;
     }
     return null;
   };
@@ -78,11 +82,10 @@ export default function Conciergerie() {
     const codeOrigine = extraireIATA(formData.origine);
     const codeDest = extraireIATA(formData.destination);
 
-    // 🛑 VÉRIFICATION AVANT PAIEMENT
-    const erreurBudget = validerMission(codeDest, parseInt(formData.budget_max), formData.passagers, formData.bagage_soute);
+    const erreurMission = validerMission(codeDest, parseInt(formData.budget_max), formData.passagers, formData.bagage_soute);
     
-    if (erreurBudget) {
-        setErrorMessage(erreurBudget);
+    if (erreurMission) {
+        setErrorMessage(erreurMission);
         return;
     }
 
@@ -110,7 +113,6 @@ export default function Conciergerie() {
     }
   };
 
-  // --- RENDU UI (Identique à ton précédent, avec datalist) ---
   if (success) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
@@ -118,12 +120,12 @@ export default function Conciergerie() {
           <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-5">
             <Check size={32} strokeWidth={3} />
           </div>
-          <h2 className="text-xl font-black text-slate-900 mb-3">Dossier validé !</h2>
+          <h2 className="text-xl font-black text-slate-900 mb-3">Dossier pré-validé !</h2>
           <p className="text-sm text-slate-500 mb-6">
-            Votre budget est réaliste. Notre Agent Sniper est prêt à être activé dès réception de votre acompte.
+            Vos critères sont réalistes. Il ne reste plus qu'à régler l'acompte de 9,90€ pour lancer notre Agent Sniper.
           </p>
           <button onClick={() => navigate('/')} className="bg-blue-600 text-white text-sm font-bold py-3 px-6 rounded-xl w-full hover:bg-blue-700 transition-colors">
-            Payer 9,90€ et lancer la traque
+            (Simulation) Payer 9,90€
           </button>
         </div>
       </div>
@@ -131,7 +133,8 @@ export default function Conciergerie() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">
+      
       <datalist id="liste-aeroports">
         {DESTINATIONS_LIST.map((dest, i) => (
           <option key={i} value={`${dest.ville} (${dest.code})`} />
@@ -139,7 +142,7 @@ export default function Conciergerie() {
       </datalist>
 
       <header className="h-16 px-6 flex items-center justify-between bg-white border-b border-slate-200 sticky top-0 z-50">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-slate-900 transition-colors">
           <ArrowLeft size={16} /> Retour
         </button>
         <div className="flex items-center gap-1.5">
@@ -148,17 +151,57 @@ export default function Conciergerie() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-        {/* Colonne Gauche : Argumentaire */}
+      <main className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+        
+        {/* LA COLONNE DE GAUCHE (RETROUVÉE !) */}
         <div className="lg:sticky lg:top-24">
-           {/* ... Ton contenu actuel (Lancement, Traque, Succès) ... */}
-           <h1 className="text-3xl lg:text-4xl font-black leading-tight mb-6">Expertise humaine.<br/><span className="text-blue-600">Puissance algorithmique.</span></h1>
-           <p className="text-slate-500 mb-10">Nous ne cherchons pas seulement des vols, nous traquons les erreurs de prix pour vous.</p>
+          <div className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-800 font-bold text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-full mb-5">
+            <Target size={12} /> Service Conciergerie
+          </div>
+          
+          <h1 className="text-3xl lg:text-4xl font-black leading-tight mb-6">
+            <span className="text-blue-600">Ne cherchez plus.</span><br/>
+            Nos agents le font pour vous.
+          </h1>
+          <p className="text-base text-slate-500 mb-10 leading-relaxed">
+            Déléguez votre recherche à nos experts. Nous utilisons des algorithmes professionnels pour dénicher les meilleures failles tarifaires. Vous fixez votre budget maximum total, nos frais sont inclus dedans.
+          </p>
+
+          <div className="grid grid-cols-1 gap-4 mb-10">
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex gap-3.5 items-start transition-all hover:shadow-md">
+              <div className="text-blue-600 mt-0.5 shrink-0"><UserCheck size={22} strokeWidth={2.5} /></div>
+              <div>
+                <h4 className="font-bold text-base text-slate-950">1. Lancement (9,90€)</h4>
+                <p className="text-slate-600 text-xs mt-1 leading-relaxed">Frais de dossier fixes pour activer immédiatement votre robot traqueur surpuissant.</p>
+              </div>
+            </div>
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex gap-3.5 items-start transition-all hover:shadow-md">
+              <div className="text-blue-600 mt-0.5 shrink-0"><Clock size={22} strokeWidth={2.5} /></div>
+              <div>
+                <h4 className="font-bold text-base text-slate-950">2. La Traque (72h max)</h4>
+                <p className="text-slate-600 text-xs mt-1 leading-relaxed">Le robot scanne les prix en continu et ne s'arrête que s'il bat votre budget exigé.</p>
+              </div>
+            </div>
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex gap-3.5 items-start transition-all hover:shadow-md">
+              <div className="text-blue-600 mt-0.5 shrink-0"><Check size={22} strokeWidth={2.5} /></div>
+              <div>
+                <h4 className="font-bold text-base text-slate-950">3. Succès (29€)</h4>
+                <p className="text-slate-600 text-xs mt-1 leading-relaxed">Frais de succès facturés uniquement si nous trouvons un vol rentrant dans votre budget total.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl flex items-start gap-3">
+            <ShieldCheck size={20} className="text-blue-600 shrink-0 mt-0.5" />
+            <p className="text-xs font-medium text-blue-950 leading-relaxed">
+              <strong>Transparence absolue :</strong> Vos frais de recherche et de succès (38,90€) sont <b>inclus</b> dans le budget maximum que vous allez nous indiquer ci-contre.
+            </p>
+          </div>
         </div>
 
-        {/* Colonne Droite : Formulaire */}
+        {/* LA COLONNE DE DROITE (FORMULAIRE INTELLIGENT) */}
         <div className="bg-white p-8 rounded-[2rem] shadow-lg border border-slate-100">
-          <h3 className="text-lg font-black mb-8 text-center">Configurez votre Sniper</h3>
+          <h3 className="text-lg font-black mb-8 text-center text-slate-950">Briefez votre Agent Expert</h3>
           
           {errorMessage && (
             <div className="mb-6 bg-red-50 text-red-700 p-4 rounded-xl flex items-start gap-3 text-sm font-medium border border-red-100">
@@ -169,51 +212,121 @@ export default function Conciergerie() {
           
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
-                <div className="relative">
-                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                  <input type="text" list="liste-aeroports" required placeholder="Départ" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white" onChange={e => setFormData({...formData, origine: e.target.value})} />
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Départ</label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <input type="text" list="liste-aeroports" required placeholder="Ex: Paris (ORY)" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" onChange={e => setFormData({...formData, origine: e.target.value})} />
+                  </div>
                 </div>
-                <div className="relative">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                  <input type="text" list="liste-aeroports" required placeholder="Destination" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white" onChange={e => setFormData({...formData, destination: e.target.value})} />
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Arrivée</label>
+                  <div className="relative">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <input type="text" list="liste-aeroports" required placeholder="Ex: New York (JFK)" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" onChange={e => setFormData({...formData, destination: e.target.value})} />
+                  </div>
                 </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-                <input type="date" required className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold outline-none" onChange={e => setFormData({...formData, date_depart: e.target.value})} />
-                <input type="date" required className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold outline-none" onChange={e => setFormData({...formData, date_retour: e.target.value})} />
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Aller</label>
+                <div className="relative">
+                  <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                  <input 
+                    type="date" 
+                    required 
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" 
+                    onChange={e => {
+                      setFormData({...formData, date_depart: e.target.value});
+                      if (dateRetourRef.current) {
+                        dateRetourRef.current.focus(); 
+                        try { dateRetourRef.current.showPicker(); } catch (err) {}
+                      }
+                    }} 
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Retour</label>
+                <div className="relative">
+                  <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                  <input 
+                    type="date" 
+                    required 
+                    ref={dateRetourRef}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" 
+                    onChange={e => setFormData({...formData, date_retour: e.target.value})} 
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-                <select className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold" onChange={e => setFormData({...formData, passagers: parseInt(e.target.value)})}>
-                  {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} Passager{n>1?'s':''}</option>)}
-                </select>
-                <select className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold" onChange={e => setFormData({...formData, flexibilite: e.target.value})}>
-                  <option>Dates exactes</option>
-                  <option>± 1 jour</option>
-                  <option>± 3 jours</option>
-                </select>
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Passagers</label>
+                  <select className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all appearance-none cursor-pointer shadow-inner" onChange={e => setFormData({...formData, passagers: parseInt(e.target.value)})}>
+                    <option value="1">1 Personne</option>
+                    <option value="2">2 Personnes</option>
+                    <option value="3">3 Personnes</option>
+                    <option value="4">4 Personnes</option>
+                    <option value="5">5 Personnes</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Flexibilité</label>
+                  <div className="relative">
+                    <CalendarDays className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <select className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all appearance-none cursor-pointer shadow-inner" onChange={e => setFormData({...formData, flexibilite: e.target.value})}>
+                      <option>Dates exactes (Aucune)</option>
+                      <option>± 1 jour (Recommandé)</option>
+                      <option>± 3 jours (Meilleurs prix)</option>
+                    </select>
+                  </div>
+                </div>
             </div>
 
-            <input type="number" required placeholder="Budget TOTAL Max (ex: 800€)" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold outline-none" onChange={e => setFormData({...formData, budget_max: e.target.value})} />
+            <div>
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Budget Max TOTAL (Pour tous les passagers)</label>
+              <input type="number" required placeholder="Ex: 850€ (Frais FlyRadar inclus)" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" onChange={e => setFormData({...formData, budget_max: e.target.value})} />
+            </div>
 
-            <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl flex items-center justify-between cursor-pointer" onClick={() => setFormData({...formData, bagage_soute: !formData.bagage_soute})}>
+            <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl flex items-center justify-between cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => setFormData({...formData, bagage_soute: !formData.bagage_soute})}>
               <div className="flex items-center gap-3">
                 <Luggage size={20} className={formData.bagage_soute ? "text-blue-600" : "text-slate-400"} />
-                <div className="text-sm font-bold">Bagage en soute inclus</div>
+                <div>
+                  <div className="text-sm font-bold text-slate-900">Inclure un bagage en soute</div>
+                  <div className="text-[10px] text-slate-500 font-medium mt-0.5">Provision aller-retour (120€) déduite du budget billet.</div>
+                </div>
               </div>
-              <div className={`w-5 h-5 rounded border ${formData.bagage_soute ? 'bg-blue-600 border-blue-600' : 'bg-white border-slate-300'}`}>
-                {formData.bagage_soute && <Check size={14} className="text-white mx-auto" />}
+              <div className={`w-6 h-6 rounded border flex items-center justify-center transition-colors ${formData.bagage_soute ? 'bg-blue-600 border-blue-600' : 'bg-white border-slate-300'}`}>
+                {formData.bagage_soute && <Check size={14} className="text-white" />}
               </div>
             </div>
 
-            <input type="email" required placeholder="Email de contact" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold outline-none" onChange={e => setFormData({...formData, client_email: e.target.value})} />
+            <div>
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Préférence de trajet</label>
+              <select className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all appearance-none cursor-pointer shadow-inner" onChange={e => setFormData({...formData, preferences_escales: e.target.value})}>
+                <option>Peu importe (Meilleurs prix)</option>
+                <option>1 escale maximum</option>
+                <option>Vol direct uniquement</option>
+              </select>
+            </div>
 
-            <button disabled={isSubmitting} type="submit" className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 hover:bg-blue-700 transition-all disabled:opacity-50">
-              {isSubmitting ? <Loader2 className="animate-spin" /> : <><Send size={18} /> Valider mon dossier</>}
+            <div>
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Email de contact</label>
+              <input type="email" required placeholder="Pour recevoir le résultat" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" onChange={e => setFormData({...formData, client_email: e.target.value})} />
+            </div>
+
+            <button disabled={isSubmitting} type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-3.5 rounded-xl mt-4 transition-colors shadow-lg flex items-center justify-center gap-2 disabled:opacity-50">
+              {isSubmitting ? 'Analyse en cours...' : <><Send size={16} /> Lancer l'analyse du dossier</>}
             </button>
+            <div className="text-center text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-3 flex items-center justify-center gap-1.5">
+              <ShieldCheck size={12} className="text-blue-500"/> Étape 1 sur 2 (Vérification de faisabilité)
+            </div>
           </form>
         </div>
+
       </main>
     </div>
   );
