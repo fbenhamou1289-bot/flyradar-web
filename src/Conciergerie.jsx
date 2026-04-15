@@ -185,14 +185,14 @@ export default function Conciergerie() {
               <div className="text-blue-600 mt-0.5 shrink-0"><UserCheck size={22} strokeWidth={2.5} /></div>
               <div>
                 <h4 className="font-bold text-base text-slate-950">1. Lancement (9,90€)</h4>
-                <p className="text-slate-600 text-xs mt-1 leading-relaxed">Frais de dossier fixes pour activer immédiatement votre robot traqueur surpuissant.</p>
+                <p className="text-slate-600 text-xs mt-1 leading-relaxed">Frais de dossier fixes pour activer immédiatement la traque de nos agents.</p>
               </div>
             </div>
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex gap-3.5 items-start transition-all hover:shadow-md">
               <div className="text-blue-600 mt-0.5 shrink-0"><Clock size={22} strokeWidth={2.5} /></div>
               <div>
                 <h4 className="font-bold text-base text-slate-950">2. La Traque (72h max)</h4>
-                <p className="text-slate-600 text-xs mt-1 leading-relaxed">Le robot scanne les prix en continu et ne s'arrête que s'il bat votre budget exigé.</p>
+                <p className="text-slate-600 text-xs mt-1 leading-relaxed">Nos agents scannent les prix en continu et ne s'arrêtent que lorsque le prix trouvé est inférieur à votre budget exigé.</p>
               </div>
             </div>
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex gap-3.5 items-start transition-all hover:shadow-md">
