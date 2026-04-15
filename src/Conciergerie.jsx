@@ -4,14 +4,27 @@ import { Target, Search, MapPin, Calendar, ArrowLeft, Check, ShieldCheck, UserCh
 import { supabase } from './VolsPasChers'; 
 
 const DESTINATIONS_LIST = [
+  // 🇫🇷 France
   { ville: "Paris - Charles de Gaulle", code: "CDG" },
   { ville: "Paris - Orly", code: "ORY" },
+  { ville: "Lyon - Saint-Exupéry", code: "LYS" },
+  { ville: "Marseille - Provence", code: "MRS" },
+  { ville: "Nice - Côte d'Azur", code: "NCE" },
+  
+  // 🇲🇦 Maghreb
   { ville: "Marrakech - Menara (Maroc)", code: "RAK" },
+  { ville: "Casablanca - Mohammed V (Maroc)", code: "CMN" },
+  { ville: "Alger - Houari Boumédiène (Algérie)", code: "ALG" },
   { ville: "Tlemcen - Zenata (Algérie)", code: "TLM" },
+  { ville: "Tunis - Carthage (Tunisie)", code: "TUN" },
+  
+  // 🌎 International
   { ville: "New York - JFK (USA)", code: "JFK" },
-  { ville: "Tokyo - Haneda (Japon)", code: "HND" },
+  { ville: "Los Angeles (USA)", code: "LAX" },
   { ville: "Dubaï (Emirats)", code: "DXB" },
-  // Tes autres destinations ici...
+  { ville: "Tokyo - Haneda (Japon)", code: "HND" },
+  { ville: "Londres - Heathrow (UK)", code: "LHR" }
+  // (Colle ici le reste de tes 130 destinations)
 ];
 
 export default function Conciergerie() {
@@ -36,6 +49,7 @@ export default function Conciergerie() {
     client_email: ''
   });
 
+  // Chargement des prix planchers depuis Supabase
   useEffect(() => {
     async function chargerConfig() {
       const { data, error } = await supabase.from('destinations_config').select('*');
@@ -60,7 +74,7 @@ export default function Conciergerie() {
     }
 
     if (!seuils[destCode]) {
-        return `Destination non reconnue par notre radar. Veuillez sélectionner une ville dans la liste déroulante.`;
+        return `Destination non reconnue par notre radar. Veuillez sélectionner une ville dans la liste déroulante pour un calcul précis.`;
     }
     
     const fraisFlyRadar = 38.90; 
@@ -107,7 +121,7 @@ export default function Conciergerie() {
       if (error) throw error;
       setSuccess(true);
     } catch (error) {
-      setErrorMessage("Erreur de connexion. Veuillez réessayer.");
+      setErrorMessage("Erreur de connexion avec la base de données. Veuillez réessayer.");
     } finally {
       setIsSubmitting(false);
     }
@@ -239,8 +253,8 @@ export default function Conciergerie() {
                       const nouvelleDate = e.target.value;
                       setFormData({...formData, date_depart: nouvelleDate});
                       
-                      // 🛑 LE CORRECTIF EST ICI : On vérifie que la date fait 10 caractères (YYYY-MM-DD)
-                      if (nouvelleDate.length === 10 && dateRetourRef.current) {
+                      // 🛑 L'intelligence de la date : ne passe au champ suivant que si l'année saisie commence par "202" (2024, 2025, 2026...)
+                      if (nouvelleDate && nouvelleDate.startsWith('202') && dateRetourRef.current) {
                         dateRetourRef.current.focus(); 
                         try { dateRetourRef.current.showPicker(); } catch (err) {}
                       }
