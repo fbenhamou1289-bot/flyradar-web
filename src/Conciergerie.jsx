@@ -101,8 +101,9 @@ export default function Conciergerie() {
   const [errorMessage, setErrorMessage] = useState('');
   const [seuils, setSeuils] = useState({}); 
   
-  // 🛑 NOUVEAU : On garde en mémoire l'ID du dossier
   const [missionId, setMissionId] = useState(null); 
+  // 🎁 NOUVEAU : On gère l'état du crédit
+  const [hasCredit, setHasCredit] = useState(false);
   
   const dateRetourRef = useRef(null);
   
@@ -133,6 +134,24 @@ export default function Conciergerie() {
     }
     chargerConfig();
   }, []);
+
+  // 🕵️‍♀️ NOUVEAU : La fonction qui vérifie si l'e-mail a un crédit
+  const verifierCredit = async (email) => {
+    if (!email || !email.includes('@')) return;
+    try {
+      const { data } = await supabase
+        .from('Users')
+        .select('credits_conciergerie')
+        .eq('email', email.toLowerCase().trim())
+        .maybeSingle();
+
+      if (data && data.credits_conciergerie > 0) {
+        setHasCredit(true);
+      } else {
+        setHasCredit(false);
+      }
+    } catch (e) { console.error("Erreur vérif crédit", e); }
+  };
 
   const extraireIATA = (texte) => {
     const match = texte.trim().match(/\(([A-Z]{3})\)$/);
@@ -187,7 +206,9 @@ export default function Conciergerie() {
 
     setIsSubmitting(true);
     try {
-      // 🛑 MODIFICATION ICI : On ajoute .select() pour que Supabase nous renvoie l'ID généré
+      // 🛑 SI LE CLIENT A UN CRÉDIT, ON LE MET DIRECTEMENT EN_ATTENTE
+      const statutDossier = hasCredit ? 'en_attente' : 'attente_paiement';
+
       const { data, error } = await supabase.from('missions_conciergerie').insert([{
         client_email: formData.client_email,
         origine: codeOrigine,           
@@ -199,13 +220,22 @@ export default function Conciergerie() {
         passagers: parseInt(formData.passagers),
         bagage_soute: formData.bagage_soute,
         preferences_escales: formData.preferences_escales,
-        statut: 'attente_paiement'
+        statut: statutDossier
       }]).select();
 
       if (error) throw error;
       
-      // On sauvegarde l'ID pour pouvoir le mettre dans le lien Stripe
       setMissionId(data[0].id);
+
+      // 🎁 SI ON A UTILISÉ LE CRÉDIT, ON LE RETIRE DE SON COMPTE
+      if (hasCredit) {
+         const emailClean = formData.client_email.toLowerCase().trim();
+         const { data: userData } = await supabase.from('Users').select('credits_conciergerie').eq('email', emailClean).single();
+         if (userData) {
+             await supabase.from('Users').update({ credits_conciergerie: userData.credits_conciergerie - 1 }).eq('email', emailClean);
+         }
+      }
+
       setSuccess(true);
       
     } catch (error) {
@@ -216,7 +246,6 @@ export default function Conciergerie() {
   };
 
   if (success) {
-    // 💳 MODIFICATION ICI : On ajoute le paramètre client_reference_id à ton lien Stripe
     const lienPaiementStripe = `https://buy.stripe.com/bJe5kC99SgEi0Eh2LeeQM02?prefilled_email=${encodeURIComponent(formData.client_email)}&client_reference_id=${missionId}`;
 
     return (
@@ -225,13 +254,30 @@ export default function Conciergerie() {
           <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-5">
             <Check size={32} strokeWidth={3} />
           </div>
-          <h2 className="text-xl font-black text-slate-900 mb-3">Dossier pré-validé !</h2>
-          <p className="text-sm text-slate-500 mb-6">
-            Vos critères sont réalistes. Il ne reste plus qu'à régler l'acompte de 9,90€ pour lancer notre Agent Sniper.
-          </p>
-          <a href={lienPaiementStripe} className="block w-full bg-blue-600 text-white text-sm font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-blue-700 transition-colors">
-            Payer 9,90€ par Carte
-          </a>
+          
+          {/* 🎁 NOUVEL AFFICHAGE SELON S'IL A PAYÉ OU S'IL A UTILISÉ UN CRÉDIT */}
+          {hasCredit ? (
+            <>
+              <h2 className="text-xl font-black text-slate-900 mb-3">Crédit VIP Appliqué ! 🎁</h2>
+              <p className="text-sm text-slate-500 mb-6">
+                Votre recherche est 100% gratuite. Votre Agent Sniper est déjà en cours de traque, vous recevrez les résultats par e-mail.
+              </p>
+              <button onClick={() => navigate('/')} className="block w-full bg-green-600 text-white text-sm font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-green-700 transition-colors">
+                Retour à l'accueil
+              </button>
+            </>
+          ) : (
+            <>
+              <h2 className="text-xl font-black text-slate-900 mb-3">Dossier pré-validé !</h2>
+              <p className="text-sm text-slate-500 mb-6">
+                Vos critères sont réalistes. Il ne reste plus qu'à régler l'acompte de 9,90€ pour lancer notre Agent Sniper.
+              </p>
+              <a href={lienPaiementStripe} className="block w-full bg-blue-600 text-white text-sm font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-blue-700 transition-colors">
+                Payer 9,90€ par Carte
+              </a>
+            </>
+          )}
+
           <p className="text-[10px] text-slate-400 mt-4 flex items-center justify-center gap-1">
             <ShieldCheck size={12} /> Paiement 100% sécurisé par Stripe
           </p>
@@ -418,12 +464,21 @@ export default function Conciergerie() {
 
             <div>
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Email de contact</label>
-              <input type="email" required placeholder="Pour recevoir le résultat" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold outline-none" onChange={e => setFormData({...formData, client_email: e.target.value})} />
+              {/* 🛑 LE ONBLUR EST AJOUTÉ ICI : */}
+              <input 
+                type="email" 
+                required 
+                placeholder="Pour recevoir le résultat" 
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold outline-none" 
+                onChange={e => setFormData({...formData, client_email: e.target.value})} 
+                onBlur={e => verifierCredit(e.target.value)}
+              />
             </div>
 
             <button disabled={isSubmitting} type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-4 rounded-xl shadow-lg transition-all disabled:opacity-50">
-              {isSubmitting ? <Loader2 className="animate-spin mx-auto" /> : <><Send size={16} className="inline mr-2"/> Lancer l'analyse du dossier</>}
+              {isSubmitting ? <Loader2 className="animate-spin mx-auto" /> : <><Send size={16} className="inline mr-2"/> {hasCredit ? "Lancer la recherche (Gratuit 🎁)" : "Lancer l'analyse du dossier"}</>}
             </button>
+            
             <div className="text-center text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-3 flex items-center justify-center gap-1.5">
               <ShieldCheck size={12} className="text-blue-500"/> Étape 1 sur 2 (Vérification de faisabilité)
             </div>
