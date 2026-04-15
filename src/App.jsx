@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Aide from './Aide';
 import SuccesPaiement from './SuccesPaiement';
+import ChoixClient from './ChoixClient';
 import Merci from './Merci';
 import Contact from './Contact';
 import Conciergerie from './Conciergerie';
@@ -513,6 +514,7 @@ export default function App() {
         <Route path="/cgv" element={<CGV />} />
         <Route path="/conciergerie" element={<Conciergerie />} />
         <Route path="/desabonnement" element={<Desabonnement />} />
+        <Route path="/choix" element={<ChoixClient />} />
         <Route path="/merci" element={<Merci />} />
       </Routes>
     </BrowserRouter>
