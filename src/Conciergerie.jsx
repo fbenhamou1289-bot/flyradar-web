@@ -143,8 +143,8 @@ export default function Conciergerie() {
     chargerConfig();
   }, []);
 
-  const extraireIATA = (texte) => {
-    const match = texte.match(/\(([A-Z]{3})\)/);
+const extraireIATA = (texte) => {
+    const match = texte.trim().match(/\(([A-Z]{3})\)$/);
     return match ? match[1] : texte.trim().toUpperCase(); 
   };
 
