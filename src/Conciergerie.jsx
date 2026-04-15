@@ -206,7 +206,8 @@ export default function Conciergerie() {
         passagers: parseInt(formData.passagers),
         bagage_soute: formData.bagage_soute,
         preferences_escales: formData.preferences_escales,
-        statut: 'en_attente'
+        // 🛑 MODIFICATION ICI : On met en attente de paiement pour bloquer le robot
+        statut: 'attente_paiement'
       }]);
       if (error) throw error;
       setSuccess(true);
@@ -217,7 +218,10 @@ export default function Conciergerie() {
     }
   };
 
+  // 💳 MODIFICATION ICI : Le bloc de succès contient maintenant ton lien Stripe
   if (success) {
+    const lienPaiementStripe = `https://buy.stripe.com/bJe5kC99SgEi0Eh2LeeQM02?prefilled_email=${encodeURIComponent(formData.client_email)}`;
+
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="bg-white p-10 rounded-[2rem] shadow-xl max-w-sm text-center border border-slate-100">
@@ -225,10 +229,15 @@ export default function Conciergerie() {
             <Check size={32} strokeWidth={3} />
           </div>
           <h2 className="text-xl font-black text-slate-900 mb-3">Dossier pré-validé !</h2>
-          <p className="text-sm text-slate-500 mb-6">Vos critères sont réalistes. Il ne reste plus qu'à régler l'acompte de 9,90€ pour lancer notre Agent Sniper.</p>
-          <button onClick={() => navigate('/')} className="bg-blue-600 text-white text-sm font-bold py-3 px-6 rounded-xl w-full hover:bg-blue-700 transition-colors">
-            Payer 9,90€
-          </button>
+          <p className="text-sm text-slate-500 mb-6">
+            Vos critères sont réalistes. Il ne reste plus qu'à régler l'acompte de 9,90€ pour lancer notre Agent Sniper.
+          </p>
+          <a href={lienPaiementStripe} className="block w-full bg-blue-600 text-white text-sm font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-blue-700 transition-colors">
+            Payer 9,90€ par Carte
+          </a>
+          <p className="text-[10px] text-slate-400 mt-4 flex items-center justify-center gap-1">
+            <ShieldCheck size={12} /> Paiement 100% sécurisé par Stripe
+          </p>
         </div>
       </div>
     );
@@ -381,7 +390,6 @@ export default function Conciergerie() {
 
             <div>
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Budget Max TOTAL (Pour tous les passagers)</label>
-              {/* CSS AJOUTÉ : [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none */}
               <input 
                 type="number" 
                 required 
