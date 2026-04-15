@@ -11,7 +11,7 @@ const DESTINATIONS_LIST = [
   { ville: "New York - JFK (USA)", code: "JFK" },
   { ville: "Tokyo - Haneda (Japon)", code: "HND" },
   { ville: "Dubaï (Emirats)", code: "DXB" },
-  // N'oublie pas de recoller ici tes 130 destinations si tu les as de côté
+  // Tes autres destinations ici...
 ];
 
 export default function Conciergerie() {
@@ -153,7 +153,6 @@ export default function Conciergerie() {
 
       <main className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
         
-        {/* LA COLONNE DE GAUCHE (RETROUVÉE !) */}
         <div className="lg:sticky lg:top-24">
           <div className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-800 font-bold text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-full mb-5">
             <Target size={12} /> Service Conciergerie
@@ -199,7 +198,6 @@ export default function Conciergerie() {
           </div>
         </div>
 
-        {/* LA COLONNE DE DROITE (FORMULAIRE INTELLIGENT) */}
         <div className="bg-white p-8 rounded-[2rem] shadow-lg border border-slate-100">
           <h3 className="text-lg font-black mb-8 text-center text-slate-950">Briefez votre Agent Expert</h3>
           
@@ -238,8 +236,11 @@ export default function Conciergerie() {
                     required 
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner" 
                     onChange={e => {
-                      setFormData({...formData, date_depart: e.target.value});
-                      if (dateRetourRef.current) {
+                      const nouvelleDate = e.target.value;
+                      setFormData({...formData, date_depart: nouvelleDate});
+                      
+                      // 🛑 LE CORRECTIF EST ICI : On vérifie que la date fait 10 caractères (YYYY-MM-DD)
+                      if (nouvelleDate.length === 10 && dateRetourRef.current) {
                         dateRetourRef.current.focus(); 
                         try { dateRetourRef.current.showPicker(); } catch (err) {}
                       }
