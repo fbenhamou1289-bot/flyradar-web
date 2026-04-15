@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Target, Search, MapPin, Calendar, ArrowLeft, Check, ShieldCheck, UserCheck, Clock, Send, CalendarDays, Luggage, AlertCircle, Loader2 } from 'lucide-react';
 import { supabase } from './VolsPasChers'; 
 
+// 🌍 MÉGA-LISTE DES DESTINATIONS (+ de 100 villes et multi-aéroports)
 const DESTINATIONS_LIST = [
-  // --- MULTI-AÉROPORTS ---
+  // --- MULTI-AÉROPORTS (LE CHOIX PRO) ---
   { ville: "Paris - Tous aéroports", code: "PAR" },
   { ville: "Londres - Tous aéroports", code: "LON" },
   { ville: "New York - Tous aéroports", code: "NYC" },
@@ -14,6 +15,10 @@ const DESTINATIONS_LIST = [
   { ville: "Milan - Tous aéroports", code: "MIL" },
   { ville: "Rome - Tous aéroports", code: "ROM" },
   { ville: "Berlin - Tous aéroports", code: "BER" },
+  { ville: "Washington - Tous aéroports", code: "WAS" },
+  { ville: "Montréal - Tous aéroports", code: "YMQ" },
+  { ville: "Sao Paulo - Tous aéroports", code: "SAO" },
+  { ville: "Buenos Aires - Tous aéroports", code: "BUE" },
 
   // --- FRANCE ---
   { ville: "Paris - Orly", code: "ORY" },
@@ -31,36 +36,14 @@ const DESTINATIONS_LIST = [
   { ville: "Biarritz", code: "BIQ" },
   { ville: "Ajaccio", code: "AJA" },
   { ville: "Bastia", code: "BIA" },
-  { ville: "Figari", code: "FSC" },
-
-  // --- MAGHREB ---
-  { ville: "Marrakech - Menara (Maroc)", code: "RAK" },
-  { ville: "Casablanca (Maroc)", code: "CMN" },
-  { ville: "Agadir (Maroc)", code: "AGA" },
-  { ville: "Fès (Maroc)", code: "FEZ" },
-  { ville: "Rabat (Maroc)", code: "RBA" },
-  { ville: "Tanger (Maroc)", code: "TNG" },
-  { ville: "Oujda (Maroc)", code: "OUD" },
-  { ville: "Nador (Maroc)", code: "NDR" },
-  { ville: "Alger (Algérie)", code: "ALG" },
-  { ville: "Oran (Algérie)", code: "ORN" },
-  { ville: "Tlemcen (Algérie)", code: "TLM" },
-  { ville: "Constantine (Algérie)", code: "CZL" },
-  { ville: "Annaba (Algérie)", code: "AAE" },
-  { ville: "Tunis (Tunisie)", code: "TUN" },
-  { ville: "Djerba (Tunisie)", code: "DJE" },
-  { ville: "Monastir (Tunisie)", code: "MIR" },
 
   // --- EUROPE ---
   { ville: "Madrid (Espagne)", code: "MAD" },
   { ville: "Barcelone (Espagne)", code: "BCN" },
   { ville: "Malaga (Espagne)", code: "AGP" },
-  { ville: "Séville (Espagne)", code: "SVQ" },
   { ville: "Palma de Majorque (Espagne)", code: "PMI" },
-  { ville: "Ibiza (Espagne)", code: "IBZ" },
   { ville: "Lisbonne (Portugal)", code: "LIS" },
   { ville: "Porto (Portugal)", code: "OPO" },
-  { ville: "Faro (Portugal)", code: "FAO" },
   { ville: "Amsterdam (Pays-Bas)", code: "AMS" },
   { ville: "Bruxelles (Belgique)", code: "BRU" },
   { ville: "Genève (Suisse)", code: "GVA" },
@@ -73,12 +56,40 @@ const DESTINATIONS_LIST = [
   { ville: "Stockholm (Suède)", code: "ARN" },
   { ville: "Oslo (Norvège)", code: "OSL" },
   { ville: "Athènes (Grèce)", code: "ATH" },
-  { ville: "Héraklion - Crète", code: "HER" },
-  { ville: "Santorin", code: "JTR" },
-  { ville: "Mykonos", code: "JMK" },
+  { ville: "Dublin (Irlande)", code: "DUB" },
+
+  // --- MAGHREB & AFRIQUE ---
+  { ville: "Marrakech (Maroc)", code: "RAK" },
+  { ville: "Casablanca (Maroc)", code: "CMN" },
+  { ville: "Agadir (Maroc)", code: "AGA" },
+  { ville: "Alger (Algérie)", code: "ALG" },
+  { ville: "Oran (Algérie)", code: "ORN" },
+  { ville: "Tunis (Tunisie)", code: "TUN" },
+  { ville: "Djerba (Tunisie)", code: "DJE" },
+  { ville: "Dakar (Sénégal)", code: "DSS" },
+  { ville: "Abidjan (Côte d'Ivoire)", code: "ABJ" },
+  { ville: "Johannesburg (Afr. du Sud)", code: "JNB" },
+  { ville: "Le Caire (Égypte)", code: "CAI" },
+
+  // --- AMÉRIQUES ---
+  { ville: "New York - JFK (USA)", code: "JFK" },
+  { ville: "Miami (USA)", code: "MIA" },
+  { ville: "Los Angeles (USA)", code: "LAX" },
+  { ville: "San Francisco (USA)", code: "SFO" },
+  { ville: "Las Vegas (USA)", code: "LAS" },
+  { ville: "Toronto (Canada)", code: "YYZ" },
+  { ville: "Cancún (Mexique)", code: "CUN" },
+  { ville: "Pointe-à-Pitre (Guadeloupe)", code: "PTP" },
+  { ville: "Fort-de-France (Martinique)", code: "FDF" },
+  { ville: "Punta Cana (Rép. Dom)", code: "PUJ" },
+  { ville: "Bogota (Colombie)", code: "BOG" },
+  { ville: "Rio de Janeiro (Brésil)", code: "GIG" },
 
   // --- ASIE & OCÉANIE ---
+  { ville: "Dubaï (Emirats)", code: "DXB" },
   { ville: "Hong Kong (Chine)", code: "HKG" },
+  { ville: "Pékin (Chine)", code: "PEK" },
+  { ville: "Shanghai (Chine)", code: "PVG" },
   { ville: "Phuket (Thaïlande)", code: "HKT" },
   { ville: "Bangkok - Suvarnabhumi", code: "BKK" },
   { ville: "Singapour", code: "SIN" },
@@ -90,19 +101,7 @@ const DESTINATIONS_LIST = [
   { ville: "Kuala Lumpur (Malaisie)", code: "KUL" },
   { ville: "Sydney (Australie)", code: "SYD" },
   { ville: "Melbourne (Australie)", code: "MEL" },
-
-  // --- AMÉRIQUES ---
-  { ville: "New York - JFK", code: "JFK" },
-  { ville: "Miami (USA)", code: "MIA" },
-  { ville: "Los Angeles (USA)", code: "LAX" },
-  { ville: "San Francisco (USA)", code: "SFO" },
-  { ville: "Las Vegas (USA)", code: "LAS" },
-  { ville: "Montréal (Canada)", code: "YUL" },
-  { ville: "Toronto (Canada)", code: "YYZ" },
-  { ville: "Cancún (Mexique)", code: "CUN" },
-  { ville: "Pointe-à-Pitre (Guadeloupe)", code: "PTP" },
-  { ville: "Fort-de-France (Martinique)", code: "FDF" },
-  { ville: "Punta Cana (Rép. Dom)", code: "PUJ" },
+  { ville: "Auckland (Nouv. Zélande)", code: "AKL" },
   { ville: "Saint-Denis (La Réunion)", code: "RUN" }
 ];
 
@@ -143,7 +142,7 @@ export default function Conciergerie() {
     chargerConfig();
   }, []);
 
-const extraireIATA = (texte) => {
+  const extraireIATA = (texte) => {
     const match = texte.trim().match(/\(([A-Z]{3})\)$/);
     return match ? match[1] : texte.trim().toUpperCase(); 
   };
@@ -227,7 +226,9 @@ const extraireIATA = (texte) => {
           </div>
           <h2 className="text-xl font-black text-slate-900 mb-3">Dossier pré-validé !</h2>
           <p className="text-sm text-slate-500 mb-6">Vos critères sont réalistes. Il ne reste plus qu'à régler l'acompte de 9,90€ pour lancer notre Agent Sniper.</p>
-          <button onClick={() => navigate('/')} className="bg-blue-600 text-white text-sm font-bold py-3 px-6 rounded-xl w-full">Payer 9,90€</button>
+          <button onClick={() => navigate('/')} className="bg-blue-600 text-white text-sm font-bold py-3 px-6 rounded-xl w-full hover:bg-blue-700 transition-colors">
+            Payer 9,90€
+          </button>
         </div>
       </div>
     );
@@ -235,19 +236,20 @@ const extraireIATA = (texte) => {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+      
+      {/* HEADER CORRIGÉ : LOGO À GAUCHE, RETOUR À DROITE */}
       <header className="h-16 px-6 flex items-center justify-between bg-white border-b border-slate-200 sticky top-0 z-50">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
-          <ArrowLeft size={16} /> Retour
-        </button>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 cursor-pointer" onClick={() => navigate('/')}>
           <Target className="text-blue-600" size={20} strokeWidth={2.5} />
-          <span className="font-black text-lg">Fly<span className="text-blue-600">Radar</span></span>
+          <span className="font-black text-lg tracking-tight">Fly<span className="text-blue-600">Radar</span></span>
         </div>
+        <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-slate-900 transition-colors">
+          Retour <ArrowLeft size={16} className="rotate-180" />
+        </button>
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
         
-        {/* LA COLONNE DE GAUCHE : RESTAURÉE À L'IDENTIQUE */}
         <div className="lg:sticky lg:top-24">
           <div className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-800 font-bold text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-full mb-5">
             <Target size={12} /> Service Conciergerie
@@ -323,7 +325,7 @@ const extraireIATA = (texte) => {
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Arrivée</label>
                   <div className="relative">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                    <input type="text" autoComplete="off" value={formData.destination} onChange={(e) => gererSaisieDest(e.target.value)} required placeholder="Ex: Phuket" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold focus:bg-white outline-none" />
+                    <input type="text" autoComplete="off" value={formData.destination} onChange={(e) => gererSaisieDest(e.target.value)} required placeholder="Ex: New York" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold focus:bg-white outline-none" />
                   </div>
                   {suggestionsDest.length > 0 && (
                     <div className="absolute z-50 w-full bg-white border border-slate-200 rounded-xl mt-1 shadow-xl overflow-hidden">
@@ -344,7 +346,6 @@ const extraireIATA = (texte) => {
                     onChange={e => {
                       const val = e.target.value; 
                       setFormData({...formData, date_depart: val});
-                      // Le focus se fait silencieusement, sans ouvrir le calendrier intempestivement.
                       if (val.startsWith('202') && dateRetourRef.current) { 
                         dateRetourRef.current.focus(); 
                       }
@@ -380,7 +381,14 @@ const extraireIATA = (texte) => {
 
             <div>
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Budget Max TOTAL (Pour tous les passagers)</label>
-              <input type="number" required placeholder="Ex: 850€ (Frais FlyRadar inclus)" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold focus:bg-white outline-none" onChange={e => setFormData({...formData, budget_max: e.target.value})} />
+              {/* CSS AJOUTÉ : [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none */}
+              <input 
+                type="number" 
+                required 
+                placeholder="Ex: 850€ (Frais FlyRadar inclus)" 
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold focus:bg-white outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
+                onChange={e => setFormData({...formData, budget_max: e.target.value})} 
+              />
             </div>
 
             <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl flex items-center justify-between cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => setFormData({...formData, bagage_soute: !formData.bagage_soute})}>
