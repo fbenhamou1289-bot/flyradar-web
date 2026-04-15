@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Target, Search, MapPin, Calendar, ArrowLeft, Check, ShieldCheck, UserCheck, Clock, Send, CalendarDays, Luggage, AlertCircle, Loader2 } from 'lucide-react';
 import { supabase } from './VolsPasChers'; 
 
-// 🌍 MÉGA-LISTE DES DESTINATIONS (+ de 100 villes et multi-aéroports)
+// 🌍 MÉGA-LISTE DES DESTINATIONS
 const DESTINATIONS_LIST = [
-  // --- MULTI-AÉROPORTS (LE CHOIX PRO) ---
   { ville: "Paris - Tous aéroports", code: "PAR" },
   { ville: "Londres - Tous aéroports", code: "LON" },
   { ville: "New York - Tous aéroports", code: "NYC" },
@@ -19,8 +18,6 @@ const DESTINATIONS_LIST = [
   { ville: "Montréal - Tous aéroports", code: "YMQ" },
   { ville: "Sao Paulo - Tous aéroports", code: "SAO" },
   { ville: "Buenos Aires - Tous aéroports", code: "BUE" },
-
-  // --- FRANCE ---
   { ville: "Paris - Orly", code: "ORY" },
   { ville: "Paris - Charles de Gaulle", code: "CDG" },
   { ville: "Paris - Beauvais", code: "BVA" },
@@ -36,8 +33,6 @@ const DESTINATIONS_LIST = [
   { ville: "Biarritz", code: "BIQ" },
   { ville: "Ajaccio", code: "AJA" },
   { ville: "Bastia", code: "BIA" },
-
-  // --- EUROPE ---
   { ville: "Madrid (Espagne)", code: "MAD" },
   { ville: "Barcelone (Espagne)", code: "BCN" },
   { ville: "Malaga (Espagne)", code: "AGP" },
@@ -57,8 +52,6 @@ const DESTINATIONS_LIST = [
   { ville: "Oslo (Norvège)", code: "OSL" },
   { ville: "Athènes (Grèce)", code: "ATH" },
   { ville: "Dublin (Irlande)", code: "DUB" },
-
-  // --- MAGHREB & AFRIQUE ---
   { ville: "Marrakech (Maroc)", code: "RAK" },
   { ville: "Casablanca (Maroc)", code: "CMN" },
   { ville: "Agadir (Maroc)", code: "AGA" },
@@ -70,8 +63,6 @@ const DESTINATIONS_LIST = [
   { ville: "Abidjan (Côte d'Ivoire)", code: "ABJ" },
   { ville: "Johannesburg (Afr. du Sud)", code: "JNB" },
   { ville: "Le Caire (Égypte)", code: "CAI" },
-
-  // --- AMÉRIQUES ---
   { ville: "New York - JFK (USA)", code: "JFK" },
   { ville: "Miami (USA)", code: "MIA" },
   { ville: "Los Angeles (USA)", code: "LAX" },
@@ -84,8 +75,6 @@ const DESTINATIONS_LIST = [
   { ville: "Punta Cana (Rép. Dom)", code: "PUJ" },
   { ville: "Bogota (Colombie)", code: "BOG" },
   { ville: "Rio de Janeiro (Brésil)", code: "GIG" },
-
-  // --- ASIE & OCÉANIE ---
   { ville: "Dubaï (Emirats)", code: "DXB" },
   { ville: "Hong Kong (Chine)", code: "HKG" },
   { ville: "Pékin (Chine)", code: "PEK" },
@@ -111,6 +100,9 @@ export default function Conciergerie() {
   const [success, setSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [seuils, setSeuils] = useState({}); 
+  
+  // 🛑 NOUVEAU : On garde en mémoire l'ID du dossier
+  const [missionId, setMissionId] = useState(null); 
   
   const dateRetourRef = useRef(null);
   
@@ -195,7 +187,8 @@ export default function Conciergerie() {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from('missions_conciergerie').insert([{
+      // 🛑 MODIFICATION ICI : On ajoute .select() pour que Supabase nous renvoie l'ID généré
+      const { data, error } = await supabase.from('missions_conciergerie').insert([{
         client_email: formData.client_email,
         origine: codeOrigine,           
         destination: codeDest,   
@@ -206,11 +199,15 @@ export default function Conciergerie() {
         passagers: parseInt(formData.passagers),
         bagage_soute: formData.bagage_soute,
         preferences_escales: formData.preferences_escales,
-        // 🛑 MODIFICATION ICI : On met en attente de paiement pour bloquer le robot
         statut: 'attente_paiement'
-      }]);
+      }]).select();
+
       if (error) throw error;
+      
+      // On sauvegarde l'ID pour pouvoir le mettre dans le lien Stripe
+      setMissionId(data[0].id);
       setSuccess(true);
+      
     } catch (error) {
       setErrorMessage("Erreur lors de l'envoi. Réessayez.");
     } finally {
@@ -218,9 +215,9 @@ export default function Conciergerie() {
     }
   };
 
-  // 💳 MODIFICATION ICI : Le bloc de succès contient maintenant ton lien Stripe
   if (success) {
-    const lienPaiementStripe = `https://buy.stripe.com/bJe5kC99SgEi0Eh2LeeQM02?prefilled_email=${encodeURIComponent(formData.client_email)}`;
+    // 💳 MODIFICATION ICI : On ajoute le paramètre client_reference_id à ton lien Stripe
+    const lienPaiementStripe = `https://buy.stripe.com/bJe5kC99SgEi0Eh2LeeQM02?prefilled_email=${encodeURIComponent(formData.client_email)}&client_reference_id=${missionId}`;
 
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
@@ -245,8 +242,6 @@ export default function Conciergerie() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-      
-      {/* HEADER CORRIGÉ : LOGO À GAUCHE, RETOUR À DROITE */}
       <header className="h-16 px-6 flex items-center justify-between bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="flex items-center gap-1.5 cursor-pointer" onClick={() => navigate('/')}>
           <Target className="text-blue-600" size={20} strokeWidth={2.5} />
