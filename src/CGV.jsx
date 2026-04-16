@@ -36,7 +36,7 @@ export default function CGV() {
             </h1>
             
             <p className="text-slate-500 text-base max-w-xl leading-relaxed">
-              Dernière mise à jour : 29 Mars 2026. Veuillez lire attentivement ces conditions avant de souscrire à nos services.
+              Dernière mise à jour : Avril 2026. Veuillez lire attentivement ces conditions avant de souscrire à nos services.
             </p>
           </div>
 
@@ -46,43 +46,57 @@ export default function CGV() {
             <section>
               <h2 className="text-xl font-semibold text-slate-900 mb-3 tracking-tight">1. Objet du service (CGU)</h2>
               <p className="text-slate-700 leading-relaxed">
-                FlyRadar est un service de veille et d'alerte tarifaire pour les billets d'avion. Nous scrutons le web pour trouver des baisses de prix, des erreurs tarifaires ou des promotions, et nous envoyons ces alertes à nos utilisateurs par email. 
-                <strong> FlyRadar n'est pas une agence de voyage.</strong> Les réservations de vols s'effectuent toujours directement sur les sites des compagnies aériennes ou des agences tierces.
+                FlyRadar est un service de veille tarifaire et de recherche personnalisée pour les billets d'avion. Nous scrutons le web pour trouver des baisses de prix, des erreurs tarifaires ou des vols répondant à vos critères spécifiques. 
+                <strong> FlyRadar n'est pas une agence de voyage.</strong> Les réservations de vols s'effectuent toujours directement sur les sites des compagnies aériennes ou des agences tierces via les liens que nous fournissons.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-3 tracking-tight">2. Accès et Abonnements (CGV)</h2>
+              <h2 className="text-xl font-semibold text-slate-900 mb-3 tracking-tight">2. Accès et Services (CGV)</h2>
               <p className="text-slate-700 leading-relaxed mb-4">
-                FlyRadar propose deux niveaux de service :
+                FlyRadar propose plusieurs niveaux de service :
               </p>
               <ul className="list-disc pl-5 space-y-3 text-slate-700">
-                <li><strong>Le Radar Gratuit :</strong> Accès aux bons plans standards en classe Éco, avec un différé d'envoi par rapport aux membres Gold, limité à une alerte active.</li>
-                <li><strong>FlyRadar Gold (Premium) :</strong> Un abonnement payant permettant de recevoir les alertes instantanément (avant la correction des prix), incluant les classes Business/Première et des alertes illimitées.</li>
+                <li><strong>Le Radar Gratuit :</strong> Accès aux bons plans standards, limité à une alerte active.</li>
+                <li><strong>FlyRadar Gold (Premium) :</strong> Abonnement payant pour des alertes instantanées et illimitées.</li>
+                <li><strong>Service Conciergerie (Agent Sniper) :</strong> Un service de recherche sur-mesure sur 72 heures pour une destination et des dates précises, facturé à la performance.</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-3 tracking-tight">3. Tarifs, Paiement et Renouvellement</h2>
+              <h2 className="text-xl font-semibold text-slate-900 mb-3 tracking-tight">3. Tarifs, Paiement et Facturation</h2>
+              
+              <h3 className="text-lg font-medium text-slate-800 mt-6 mb-2">3.1. Abonnements (FlyRadar Gold)</h3>
               <p className="text-slate-700 leading-relaxed">
-                L'abonnement FlyRadar Gold est proposé au tarif de 9,99€ / mois ou 89,90€ / an (prix TTC). Les paiements sont sécurisés et traités par notre partenaire Stripe. L'abonnement est <strong>sans engagement</strong> et se renouvelle tacitement par périodes successives équivalentes à la période initiale, sauf résiliation de votre part avant la date de renouvellement.
+                L'abonnement Gold est facturé 9,99€/mois ou 89,90€/an. Il est sans engagement et se renouvelle tacitement sauf résiliation avant la date anniversaire.
               </p>
+
+              <h3 className="text-lg font-medium text-slate-800 mt-6 mb-2">3.2. Service Conciergerie (Agent Sniper)</h3>
+              <p className="text-slate-700 leading-relaxed">
+                Le service de recherche sur-mesure fonctionne sur un modèle de paiement en deux étapes :
+              </p>
+              <ul className="list-disc pl-5 mt-2 space-y-2 text-slate-700">
+                <li><strong>Frais d'activation :</strong> Un acompte de 9,90€ (TTC) est requis pour lancer la recherche personnalisée pendant 72 heures. Ces frais couvrent les coûts de recherche et sont <strong>strictement non remboursables</strong>, quel que soit le résultat.</li>
+                <li><strong>Frais de succès :</strong> Si un vol correspondant à vos critères est trouvé, une facture de succès de 29,00€ (TTC) vous est envoyée. Le paiement de cette somme débloque instantanément le lien de réservation du vol.</li>
+                <li><strong>En cas d'échec :</strong> Si aucun vol n'est trouvé dans les 72h, aucun frais supplémentaire n'est facturé. Le client a alors la possibilité de relancer la recherche gratuitement ou d'obtenir un crédit de recherche pour une demande future.</li>
+              </ul>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-slate-900 mb-3 tracking-tight">4. Résiliation et Rétractation</h2>
               <p className="text-slate-700 leading-relaxed">
-                Vous pouvez résilier votre abonnement Gold à tout moment depuis votre espace client ou via le lien de désabonnement. La résiliation prendra effet à la fin de la période de facturation en cours. 
-                Conformément à la loi, s'agissant d'un contenu numérique fourni sur un support immatériel et dont l'exécution a commencé avec votre accord préalable, <strong>vous renoncez expressément à votre droit de rétractation de 14 jours</strong> dès l'activation de votre compte Gold et la réception de la première alerte.
+                Conformément aux dispositions de l'article L221-28 du Code de la consommation concernant la fourniture de services pleinement exécutés avant la fin du délai de rétractation :
+                <br/><br/>
+                En souscrivant à l'abonnement Gold ou en activant une recherche Conciergerie (Agent Sniper), vous demandez expressément que l'exécution du service commence immédiatement. Par conséquent, <strong>vous renoncez expressément à votre droit de rétractation de 14 jours</strong> pour les frais d'abonnement ou les frais d'activation de 9,90€ liés à la recherche.
               </p>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-slate-900 mb-3 tracking-tight">5. Limitation de responsabilité</h2>
               <p className="text-slate-700 leading-relaxed">
-                FlyRadar s'efforce de fournir des informations exactes en temps réel. Toutefois, les prix des billets d'avion sont extrêmement volatiles. Nous ne pouvons garantir que le tarif indiqué dans l'alerte sera toujours disponible au moment où vous cliquerez sur le lien de réservation.
+                FlyRadar s'efforce de fournir des informations exactes en temps réel. Toutefois, les prix des billets d'avion sont soumis à une forte volatilité (Yield Management). Nous ne pouvons garantir que le tarif indiqué dans l'alerte ou la Conciergerie sera indéfiniment disponible. Il appartient au client de finaliser sa réservation dans les plus brefs délais après réception du lien.
                 <br/><br/>
-                FlyRadar décline toute responsabilité en cas d'annulation de votre billet par la compagnie aérienne (notamment en cas de "Error Fare" / Tarif erroné non honoré par la compagnie), de modification de vol, ou de tout litige vous opposant au site de réservation final.
+                Les honoraires de succès (29€) rémunèrent exclusivement le <strong>service de recherche</strong> et sont dus dès la fourniture du lien. FlyRadar décline toute responsabilité en cas de hausse de prix due à un paiement tardif du client, d'annulation par la compagnie aérienne, ou de tout litige lié au voyage lui-même.
               </p>
             </section>
 
