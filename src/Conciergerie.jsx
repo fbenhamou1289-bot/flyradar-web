@@ -3,95 +3,135 @@ import { useNavigate } from 'react-router-dom';
 import { Target, Search, MapPin, Calendar, ArrowLeft, Check, ShieldCheck, UserCheck, Clock, Send, CalendarDays, Luggage, AlertCircle, Loader2 } from 'lucide-react';
 import { supabase } from './VolsPasChers'; 
 
-// 🌍 MÉGA-LISTE DES DESTINATIONS
+// 🌍 MÉGA-LISTE ENRICHIE AVEC DES SEUILS DE PRIX RÉALISTES
 const DESTINATIONS_LIST = [
-  { ville: "Paris - Tous aéroports", code: "PAR" },
-  { ville: "Londres - Tous aéroports", code: "LON" },
-  { ville: "New York - Tous aéroports", code: "NYC" },
-  { ville: "Tokyo - Tous aéroports", code: "TYO" },
-  { ville: "Istanbul - Tous aéroports", code: "IST" },
-  { ville: "Bangkok - Tous aéroports", code: "BKK" },
-  { ville: "Milan - Tous aéroports", code: "MIL" },
-  { ville: "Rome - Tous aéroports", code: "ROM" },
-  { ville: "Berlin - Tous aéroports", code: "BER" },
-  { ville: "Washington - Tous aéroports", code: "WAS" },
-  { ville: "Montréal - Tous aéroports", code: "YMQ" },
-  { ville: "Sao Paulo - Tous aéroports", code: "SAO" },
-  { ville: "Buenos Aires - Tous aéroports", code: "BUE" },
-  { ville: "Paris - Orly", code: "ORY" },
-  { ville: "Paris - Charles de Gaulle", code: "CDG" },
-  { ville: "Paris - Beauvais", code: "BVA" },
-  { ville: "Lyon - Saint-Exupéry", code: "LYS" },
-  { ville: "Marseille - Provence", code: "MRS" },
-  { ville: "Nice - Côte d'Azur", code: "NCE" },
-  { ville: "Toulouse - Blagnac", code: "TLS" },
-  { ville: "Bordeaux - Mérignac", code: "BOD" },
-  { ville: "Nantes - Atlantique", code: "NTE" },
-  { ville: "Lille - Lesquin", code: "LIL" },
-  { ville: "Strasbourg", code: "SXB" },
-  { ville: "Montpellier", code: "MPL" },
-  { ville: "Biarritz", code: "BIQ" },
-  { ville: "Ajaccio", code: "AJA" },
-  { ville: "Bastia", code: "BIA" },
-  { ville: "Madrid (Espagne)", code: "MAD" },
-  { ville: "Barcelone (Espagne)", code: "BCN" },
-  { ville: "Malaga (Espagne)", code: "AGP" },
-  { ville: "Palma de Majorque (Espagne)", code: "PMI" },
-  { ville: "Lisbonne (Portugal)", code: "LIS" },
-  { ville: "Porto (Portugal)", code: "OPO" },
-  { ville: "Amsterdam (Pays-Bas)", code: "AMS" },
-  { ville: "Bruxelles (Belgique)", code: "BRU" },
-  { ville: "Genève (Suisse)", code: "GVA" },
-  { ville: "Zurich (Suisse)", code: "ZRH" },
-  { ville: "Vienne (Autriche)", code: "VIE" },
-  { ville: "Prague (Rép. Tchèque)", code: "PRG" },
-  { ville: "Budapest (Hongrie)", code: "BUD" },
-  { ville: "Varsovie (Pologne)", code: "WAW" },
-  { ville: "Copenhague (Danemark)", code: "CPH" },
-  { ville: "Stockholm (Suède)", code: "ARN" },
-  { ville: "Oslo (Norvège)", code: "OSL" },
-  { ville: "Athènes (Grèce)", code: "ATH" },
-  { ville: "Dublin (Irlande)", code: "DUB" },
-  { ville: "Marrakech (Maroc)", code: "RAK" },
-  { ville: "Casablanca (Maroc)", code: "CMN" },
-  { ville: "Agadir (Maroc)", code: "AGA" },
-  { ville: "Alger (Algérie)", code: "ALG" },
-  { ville: "Oran (Algérie)", code: "ORN" },
-  { ville: "Tunis (Tunisie)", code: "TUN" },
-  { ville: "Djerba (Tunisie)", code: "DJE" },
-  { ville: "Dakar (Sénégal)", code: "DSS" },
-  { ville: "Abidjan (Côte d'Ivoire)", code: "ABJ" },
-  { ville: "Johannesburg (Afr. du Sud)", code: "JNB" },
-  { ville: "Le Caire (Égypte)", code: "CAI" },
-  { ville: "New York - JFK (USA)", code: "JFK" },
-  { ville: "Miami (USA)", code: "MIA" },
-  { ville: "Los Angeles (USA)", code: "LAX" },
-  { ville: "San Francisco (USA)", code: "SFO" },
-  { ville: "Las Vegas (USA)", code: "LAS" },
-  { ville: "Toronto (Canada)", code: "YYZ" },
-  { ville: "Cancún (Mexique)", code: "CUN" },
-  { ville: "Pointe-à-Pitre (Guadeloupe)", code: "PTP" },
-  { ville: "Fort-de-France (Martinique)", code: "FDF" },
-  { ville: "Punta Cana (Rép. Dom)", code: "PUJ" },
-  { ville: "Bogota (Colombie)", code: "BOG" },
-  { ville: "Rio de Janeiro (Brésil)", code: "GIG" },
-  { ville: "Dubaï (Emirats)", code: "DXB" },
-  { ville: "Hong Kong (Chine)", code: "HKG" },
-  { ville: "Pékin (Chine)", code: "PEK" },
-  { ville: "Shanghai (Chine)", code: "PVG" },
-  { ville: "Phuket (Thaïlande)", code: "HKT" },
-  { ville: "Bangkok - Suvarnabhumi", code: "BKK" },
-  { ville: "Singapour", code: "SIN" },
-  { ville: "Bali - Denpasar (Indonésie)", code: "DPS" },
-  { ville: "Tokyo - Haneda (Japon)", code: "HND" },
-  { ville: "Tokyo - Narita (Japon)", code: "NRT" },
-  { ville: "Séoul (Corée du Sud)", code: "ICN" },
-  { ville: "Hô Chi Minh-Ville (Vietnam)", code: "SGN" },
-  { ville: "Kuala Lumpur (Malaisie)", code: "KUL" },
-  { ville: "Sydney (Australie)", code: "SYD" },
-  { ville: "Melbourne (Australie)", code: "MEL" },
-  { ville: "Auckland (Nouv. Zélande)", code: "AKL" },
-  { ville: "Saint-Denis (La Réunion)", code: "RUN" }
+  // Europe & Proche (Seuil très bas)
+  { ville: "Paris - Tous aéroports", code: "PAR", budget_mini: 40 },
+  { ville: "Londres - Tous aéroports", code: "LON", budget_mini: 40 },
+  { ville: "Milan - Tous aéroports", code: "MIL", budget_mini: 40 },
+  { ville: "Rome - Tous aéroports", code: "ROM", budget_mini: 40 },
+  { ville: "Berlin - Tous aéroports", code: "BER", budget_mini: 40 },
+  { ville: "Madrid (Espagne)", code: "MAD", budget_mini: 40 },
+  { ville: "Barcelone (Espagne)", code: "BCN", budget_mini: 40 },
+  { ville: "Malaga (Espagne)", code: "AGP", budget_mini: 40 },
+  { ville: "Palma de Majorque (Espagne)", code: "PMI", budget_mini: 40 },
+  { ville: "Ibiza (Espagne)", code: "IBZ", budget_mini: 50 },
+  { ville: "Lisbonne (Portugal)", code: "LIS", budget_mini: 40 },
+  { ville: "Porto (Portugal)", code: "OPO", budget_mini: 40 },
+  { ville: "Faro (Algarve, Portugal)", code: "FAO", budget_mini: 40 },
+  { ville: "Amsterdam (Pays-Bas)", code: "AMS", budget_mini: 50 },
+  { ville: "Bruxelles (Belgique)", code: "BRU", budget_mini: 40 },
+  { ville: "Genève (Suisse)", code: "GVA", budget_mini: 50 },
+  { ville: "Zurich (Suisse)", code: "ZRH", budget_mini: 60 },
+  { ville: "Vienne (Autriche)", code: "VIE", budget_mini: 50 },
+  { ville: "Prague (Rép. Tchèque)", code: "PRG", budget_mini: 50 },
+  { ville: "Budapest (Hongrie)", code: "BUD", budget_mini: 40 },
+  { ville: "Varsovie (Pologne)", code: "WAW", budget_mini: 40 },
+  { ville: "Copenhague (Danemark)", code: "CPH", budget_mini: 50 },
+  { ville: "Stockholm (Suède)", code: "ARN", budget_mini: 50 },
+  { ville: "Oslo (Norvège)", code: "OSL", budget_mini: 50 },
+  { ville: "Athènes (Grèce)", code: "ATH", budget_mini: 60 },
+  { ville: "Santorin (Grèce)", code: "JTR", budget_mini: 80 },
+  { ville: "Mykonos (Grèce)", code: "JMK", budget_mini: 80 },
+  { ville: "Héraklion (Crète, Grèce)", code: "HER", budget_mini: 60 },
+  { ville: "Dubrovnik (Croatie)", code: "DBV", budget_mini: 60 },
+  { ville: "Split (Croatie)", code: "SPU", budget_mini: 50 },
+  { ville: "Malte", code: "MLA", budget_mini: 40 },
+  { ville: "Larnaca (Chypre)", code: "LCA", budget_mini: 60 },
+  { ville: "Dublin (Irlande)", code: "DUB", budget_mini: 40 },
+  { ville: "Reykjavik (Islande)", code: "KEF", budget_mini: 100 },
+  
+  // France
+  { ville: "Paris - Orly", code: "ORY", budget_mini: 40 },
+  { ville: "Paris - Charles de Gaulle", code: "CDG", budget_mini: 40 },
+  { ville: "Paris - Beauvais", code: "BVA", budget_mini: 20 },
+  { ville: "Lyon - Saint-Exupéry", code: "LYS", budget_mini: 40 },
+  { ville: "Marseille - Provence", code: "MRS", budget_mini: 40 },
+  { ville: "Nice - Côte d'Azur", code: "NCE", budget_mini: 40 },
+  { ville: "Toulouse - Blagnac", code: "TLS", budget_mini: 40 },
+  { ville: "Bordeaux - Mérignac", code: "BOD", budget_mini: 40 },
+  { ville: "Nantes - Atlantique", code: "NTE", budget_mini: 40 },
+  { ville: "Lille - Lesquin", code: "LIL", budget_mini: 40 },
+  { ville: "Strasbourg", code: "SXB", budget_mini: 40 },
+  { ville: "Montpellier", code: "MPL", budget_mini: 40 },
+  { ville: "Biarritz", code: "BIQ", budget_mini: 40 },
+  { ville: "Ajaccio", code: "AJA", budget_mini: 60 },
+  { ville: "Bastia", code: "BIA", budget_mini: 60 },
+
+  // Maghreb & Canaries
+  { ville: "Marrakech (Maroc)", code: "RAK", budget_mini: 50 },
+  { ville: "Casablanca (Maroc)", code: "CMN", budget_mini: 80 },
+  { ville: "Agadir (Maroc)", code: "AGA", budget_mini: 50 },
+  { ville: "Alger (Algérie)", code: "ALG", budget_mini: 60 },
+  { ville: "Oran (Algérie)", code: "ORN", budget_mini: 60 },
+  { ville: "Tunis (Tunisie)", code: "TUN", budget_mini: 60 },
+  { ville: "Djerba (Tunisie)", code: "DJE", budget_mini: 80 },
+  { ville: "Tenerife (Îles Canaries)", code: "TFS", budget_mini: 100 },
+  { ville: "Lanzarote (Îles Canaries)", code: "ACE", budget_mini: 100 },
+  { ville: "Fuerteventura (Îles Canaries)", code: "FUE", budget_mini: 100 },
+  { ville: "Gran Canaria (Îles Canaries)", code: "LPA", budget_mini: 100 },
+  { ville: "Madère (Portugal)", code: "FNC", budget_mini: 100 },
+
+  // Moyen-Orient & Egypte
+  { ville: "Istanbul - Tous aéroports", code: "IST", budget_mini: 100 },
+  { ville: "Hurghada (Égypte)", code: "HRG", budget_mini: 150 },
+  { ville: "Charm el-Cheikh (Égypte)", code: "SSH", budget_mini: 150 },
+  { ville: "Le Caire (Égypte)", code: "CAI", budget_mini: 180 },
+  { ville: "Dubaï (Emirats)", code: "DXB", budget_mini: 250 },
+
+  // Afrique (Moyen & Long Courrier)
+  { ville: "Dakar (Sénégal)", code: "DSS", budget_mini: 300 },
+  { ville: "Sal (Cap-Vert)", code: "SID", budget_mini: 250 },
+  { ville: "Boa Vista (Cap-Vert)", code: "BVC", budget_mini: 250 },
+  { ville: "Abidjan (Côte d'Ivoire)", code: "ABJ", budget_mini: 350 },
+  { ville: "Zanzibar (Tanzanie)", code: "ZNZ", budget_mini: 450 },
+  { ville: "Johannesburg (Afr. du Sud)", code: "JNB", budget_mini: 450 },
+  { ville: "Le Cap (Afr. du Sud)", code: "CPT", budget_mini: 450 },
+  { ville: "Saint-Denis (La Réunion)", code: "RUN", budget_mini: 450 },
+  { ville: "Port-Louis (Île Maurice)", code: "MRU", budget_mini: 500 },
+  { ville: "Mahé (Seychelles)", code: "SEZ", budget_mini: 500 },
+
+  // Amériques & Caraïbes
+  { ville: "New York - Tous aéroports", code: "NYC", budget_mini: 300 },
+  { ville: "New York - JFK (USA)", code: "JFK", budget_mini: 300 },
+  { ville: "Miami (USA)", code: "MIA", budget_mini: 350 },
+  { ville: "Los Angeles (USA)", code: "LAX", budget_mini: 400 },
+  { ville: "San Francisco (USA)", code: "SFO", budget_mini: 400 },
+  { ville: "Las Vegas (USA)", code: "LAS", budget_mini: 400 },
+  { ville: "Washington - Tous aéroports", code: "WAS", budget_mini: 350 },
+  { ville: "Montréal - Tous aéroports", code: "YMQ", budget_mini: 300 },
+  { ville: "Toronto (Canada)", code: "YYZ", budget_mini: 350 },
+  { ville: "Cancún (Mexique)", code: "CUN", budget_mini: 400 },
+  { ville: "Pointe-à-Pitre (Guadeloupe)", code: "PTP", budget_mini: 350 },
+  { ville: "Fort-de-France (Martinique)", code: "FDF", budget_mini: 350 },
+  { ville: "Punta Cana (Rép. Dom)", code: "PUJ", budget_mini: 450 },
+  { ville: "La Havane (Cuba)", code: "HAV", budget_mini: 450 },
+  { ville: "Bogota (Colombie)", code: "BOG", budget_mini: 500 },
+  { ville: "Sao Paulo - Tous aéroports", code: "SAO", budget_mini: 500 },
+  { ville: "Rio de Janeiro (Brésil)", code: "GIG", budget_mini: 500 },
+  { ville: "Buenos Aires - Tous aéroports", code: "BUE", budget_mini: 600 },
+
+  // Asie & Océanie
+  { ville: "Bangkok - Tous aéroports", code: "BKK", budget_mini: 400 },
+  { ville: "Phuket (Thaïlande)", code: "HKT", budget_mini: 450 },
+  { ville: "Koh Samui (Thaïlande)", code: "USM", budget_mini: 500 },
+  { ville: "Tokyo - Tous aéroports", code: "TYO", budget_mini: 500 },
+  { ville: "Tokyo - Haneda (Japon)", code: "HND", budget_mini: 500 },
+  { ville: "Tokyo - Narita (Japon)", code: "NRT", budget_mini: 500 },
+  { ville: "Malé (Maldives)", code: "MLE", budget_mini: 450 },
+  { ville: "Hong Kong (Chine)", code: "HKG", budget_mini: 450 },
+  { ville: "Pékin (Chine)", code: "PEK", budget_mini: 450 },
+  { ville: "Shanghai (Chine)", code: "PVG", budget_mini: 450 },
+  { ville: "Singapour", code: "SIN", budget_mini: 450 },
+  { ville: "Bali - Denpasar (Indonésie)", code: "DPS", budget_mini: 500 },
+  { ville: "Séoul (Corée du Sud)", code: "ICN", budget_mini: 450 },
+  { ville: "Hô Chi Minh-Ville (Vietnam)", code: "SGN", budget_mini: 450 },
+  { ville: "Kuala Lumpur (Malaisie)", code: "KUL", budget_mini: 400 },
+  { ville: "Sydney (Australie)", code: "SYD", budget_mini: 700 },
+  { ville: "Melbourne (Australie)", code: "MEL", budget_mini: 700 },
+  { ville: "Auckland (Nouv. Zélande)", code: "AKL", budget_mini: 800 },
+  { ville: "Papeete (Tahiti)", code: "PPT", budget_mini: 1000 },
+  { ville: "Nouméa (Nouv. Calédonie)", code: "NOU", budget_mini: 1000 }
 ];
 
 export default function Conciergerie() {
@@ -102,7 +142,6 @@ export default function Conciergerie() {
   const [seuils, setSeuils] = useState({}); 
   
   const [missionId, setMissionId] = useState(null); 
-  // 🎁 NOUVEAU : On gère l'état du crédit
   const [hasCredit, setHasCredit] = useState(false);
   
   const dateRetourRef = useRef(null);
@@ -135,7 +174,6 @@ export default function Conciergerie() {
     chargerConfig();
   }, []);
 
-  // 🕵️‍♀️ NOUVEAU : La fonction qui vérifie si l'e-mail a un crédit
   const verifierCredit = async (email) => {
     if (!email || !email.includes('@')) return;
     try {
@@ -185,13 +223,26 @@ export default function Conciergerie() {
   };
 
   const validerMission = (destCode, budgetTotal, passagers, aBagage) => {
-    if (!seuils[destCode]) return "Destination non reconnue. Sélectionnez un choix dans la liste.";
     const fraisFlyRadar = 38.90; 
     const provisionBagage = aBagage ? 120 : 0; 
     const budgetRestantParPers = (budgetTotal / passagers) - fraisFlyRadar - provisionBagage;
-    const prixMiniRequis = seuils[destCode]; 
+    
+    // 1. On vérifie d'abord la base de données (priorité)
+    let prixMiniRequis = seuils[destCode];
+    
+    // 2. Si pas dans Supabase, on cherche dans notre super-liste locale
+    if (!prixMiniRequis) {
+        const destLocale = DESTINATIONS_LIST.find(d => d.code === destCode);
+        if (destLocale && destLocale.budget_mini) {
+            prixMiniRequis = destLocale.budget_mini;
+        } else {
+            // 3. Fallback générique si le client tape un truc qu'on n'a vraiment nulle part
+            prixMiniRequis = 150; // Plus logique que 50€ pour un aéroport lointain inconnu
+        }
+    }
+    
     if (budgetRestantParPers < prixMiniRequis) {
-        return `Budget trop faible. Après déduction de nos frais et du bagage A/R (120€), il ne reste que ${Math.floor(budgetRestantParPers)}€ pour le vol, alors que le minimum pour ${destCode} est de ${prixMiniRequis}€.`;
+        return `Budget trop faible. Après déduction de nos frais et du bagage (si inclus), il reste ${Math.floor(budgetRestantParPers)}€ par passager pour le vol. Le minimum estimé pour cette destination est d'environ ${prixMiniRequis}€.`;
     }
     return null;
   };
@@ -206,7 +257,6 @@ export default function Conciergerie() {
 
     setIsSubmitting(true);
     try {
-      // 🛑 SI LE CLIENT A UN CRÉDIT, ON LE MET DIRECTEMENT EN_ATTENTE
       const statutDossier = hasCredit ? 'en_attente' : 'attente_paiement';
 
       const { data, error } = await supabase.from('missions_conciergerie').insert([{
@@ -227,7 +277,6 @@ export default function Conciergerie() {
       
       setMissionId(data[0].id);
 
-      // 🎁 SI ON A UTILISÉ LE CRÉDIT, ON LE RETIRE DE SON COMPTE
       if (hasCredit) {
          const emailClean = formData.client_email.toLowerCase().trim();
          const { data: userData } = await supabase.from('Users').select('credits_conciergerie').eq('email', emailClean).single();
@@ -255,7 +304,6 @@ export default function Conciergerie() {
             <Check size={32} strokeWidth={3} />
           </div>
           
-          {/* 🎁 NOUVEL AFFICHAGE SELON S'IL A PAYÉ OU S'IL A UTILISÉ UN CRÉDIT */}
           {hasCredit ? (
             <>
               <h2 className="text-xl font-black text-slate-900 mb-3">Crédit VIP Appliqué ! 🎁</h2>
@@ -375,7 +423,7 @@ export default function Conciergerie() {
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Arrivée</label>
                   <div className="relative">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                    <input type="text" autoComplete="off" value={formData.destination} onChange={(e) => gererSaisieDest(e.target.value)} required placeholder="Ex: New York" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold focus:bg-white outline-none" />
+                    <input type="text" autoComplete="off" value={formData.destination} onChange={(e) => gererSaisieDest(e.target.value)} required placeholder="Ex: Cap Vert" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold focus:bg-white outline-none" />
                   </div>
                   {suggestionsDest.length > 0 && (
                     <div className="absolute z-50 w-full bg-white border border-slate-200 rounded-xl mt-1 shadow-xl overflow-hidden">
@@ -416,7 +464,7 @@ export default function Conciergerie() {
                 <div>
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Passagers</label>
                   <select className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold outline-none cursor-pointer" onChange={e => setFormData({...formData, passagers: parseInt(e.target.value)})}>
-                    {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} Personne{n>1?'s':''}</option>)}
+                    {[1,2,3,4,5,6,7,8,9].map(n => <option key={n} value={n}>{n} Personne{n>1?'s':''}</option>)}
                   </select>
                 </div>
                 <div>
@@ -464,7 +512,6 @@ export default function Conciergerie() {
 
             <div>
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Email de contact</label>
-              {/* 🛑 LE ONBLUR EST AJOUTÉ ICI : */}
               <input 
                 type="email" 
                 required 
