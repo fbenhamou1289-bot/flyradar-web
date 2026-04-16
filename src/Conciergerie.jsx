@@ -145,6 +145,7 @@ export default function Conciergerie() {
   const [hasCredit, setHasCredit] = useState(false);
   
   const dateRetourRef = useRef(null);
+  const errorRef = useRef(null); // 🎯 NOUVEAU : Référence pour le défilement
   
   const [formData, setFormData] = useState({
     origine: '',
@@ -202,7 +203,7 @@ export default function Conciergerie() {
 
   const gererSaisieOrigine = (val) => {
     setFormData({...formData, origine: val});
-    setIsValidOrigine(false); // Dès qu'il tape, on annule la validité
+    setIsValidOrigine(false); 
     
     if (val.length > 1) {
       const filtres = DESTINATIONS_LIST.filter(d => 
@@ -217,7 +218,7 @@ export default function Conciergerie() {
 
   const gererSaisieDest = (val) => {
     setFormData({...formData, destination: val});
-    setIsValidDest(false); // Dès qu'il tape, on annule la validité
+    setIsValidDest(false); 
     
     if (val.length > 1) {
       const filtres = DESTINATIONS_LIST.filter(d => 
@@ -259,6 +260,8 @@ export default function Conciergerie() {
     
     if (!isValidOrigine || !isValidDest) {
         setErrorMessage("Veuillez sélectionner le départ et l'arrivée depuis la liste proposée.");
+        // 🎯 Lancement de l'auto-scroll
+        setTimeout(() => errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
         return;
     }
     
@@ -266,7 +269,12 @@ export default function Conciergerie() {
     const codeDest = extraireIATA(formData.destination);
     
     const erreur = validerMission(codeDest, parseInt(formData.budget_max), formData.passagers, formData.bagage_soute);
-    if (erreur) { setErrorMessage(erreur); return; }
+    if (erreur) { 
+        setErrorMessage(erreur); 
+        // 🎯 Lancement de l'auto-scroll
+        setTimeout(() => errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+        return; 
+    }
 
     setIsSubmitting(true);
     try {
@@ -302,6 +310,8 @@ export default function Conciergerie() {
       
     } catch (error) {
       setErrorMessage("Erreur lors de l'envoi. Réessayez.");
+      // 🎯 Lancement de l'auto-scroll
+      setTimeout(() => errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
     } finally {
       setIsSubmitting(false);
     }
@@ -407,10 +417,11 @@ export default function Conciergerie() {
         </div>
 
         <div className="bg-white p-8 rounded-[2rem] shadow-lg border border-slate-100">
-          <h3 className="text-lg font-black mb-8 text-center text-slate-950">Briefez votre Agent Expert</h3>
+          {/* 🎯 On attache la référence ici pour le défilement ! */}
+          <h3 ref={errorRef} className="text-lg font-black mb-8 text-center text-slate-950">Briefez votre Agent Expert</h3>
           
           {errorMessage && (
-            <div className="mb-6 bg-red-50 text-red-700 p-4 rounded-xl flex items-start gap-3 text-sm font-medium border border-red-100">
+            <div className="mb-6 bg-red-50 text-red-700 p-4 rounded-xl flex items-start gap-3 text-sm font-medium border border-red-100 animate-in fade-in zoom-in-95 duration-300">
               <AlertCircle size={20} className="shrink-0 mt-0.5" />
               <p>{errorMessage}</p>
             </div>
@@ -545,7 +556,7 @@ export default function Conciergerie() {
               />
             </div>
 
-            <button disabled={isSubmitting} type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-4 rounded-xl shadow-lg transition-all disabled:opacity-50">
+            <button disabled={isSubmitting} type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-4 rounded-xl shadow-lg transition-all disabled:opacity-50 hover:-translate-y-0.5 active:scale-95">
               {isSubmitting ? <Loader2 className="animate-spin mx-auto" /> : <><Send size={16} className="inline mr-2"/> {hasCredit ? "Lancer la recherche (Gratuit 🎁)" : "Lancer l'analyse du dossier"}</>}
             </button>
             
