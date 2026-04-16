@@ -5,7 +5,15 @@ import { Target, Crown, User, HelpCircle, ChevronDown, Mail, ArrowLeft } from 'l
 const faqData = [
   {
     question: "Comment fonctionne FlyRadar ?",
-    answer: "Nos agents traquent les erreurs de prix et les baisses de tarifs secrètes au départ de votre aéroport. Si vous avez un compte gratuit, vous recevrez une alerte hebdomadaire par email contenant les 3 meilleures offres de la semaine. Vous pouvez également consulter nos autres trouvailles sur la page 'Offres en direct' du site (avec un délai de 4h). Pour réserver, il suffit de cliquer sur l'offre : vous serez redirigé vers la plateforme partenaire pour finaliser l'achat."
+    answer: "FlyRadar propose deux services. 1. La Veille Automatique : nos agents traquent les erreurs de prix et vous envoient les meilleures offres par email (Gratuit ou Gold). 2. La Conciergerie (Agent Sniper) : vous nous confiez une recherche sur-mesure pour vos dates et votre destination, et nous traquons le meilleur tarif pour vous pendant 72h."
+  },
+  {
+    question: "Puis-je demander une destination ou des dates précises ?",
+    answer: "Oui ! C'est exactement le rôle de notre service Conciergerie (Agent Sniper). Vous renseignez votre destination, vos dates et votre budget. Nous activons une traque personnalisée de 72 heures pour un acompte de 9,90€. Si nous trouvons votre vol, une commission de succès de 29€ vous sera demandée pour débloquer le lien de réservation secret."
+  },
+  {
+    question: "Que se passe-t-il si l'Agent Sniper ne trouve rien en 72h ?",
+    answer: "Si notre algorithme ne trouve aucun vol correspondant à vos critères dans le temps imparti, la mission s'arrête et les 29€ de succès ne vous sont évidemment pas facturés. Vous recevrez un email vous proposant deux choix : relancer la traque gratuitement pour 72h supplémentaires, ou obtenir un 'Crédit' qui vous offrira l'acompte de 9,90€ lors de votre prochaine demande."
   },
   {
     question: "Comment sont calculés les scores des offres (sur 10) ?",
@@ -14,10 +22,6 @@ const faqData = [
   {
     question: "Pourquoi le prix sur le site de réservation est parfois différent de l'alerte ?",
     answer: "C'est la dure loi de l'aérien : les prix changent en temps réel en fonction de l'offre et de la demande (le 'yield management'). Si, en cliquant sur notre lien, le prix a augmenté sur le site de la compagnie, c'est que l'erreur tarifaire a été corrigée ou que les derniers sièges à ce prix ont été vendus. C'est pour cette raison que la réactivité est cruciale, et c'est tout l'intérêt des alertes instantanées de notre abonnement Gold !"
-  },
-  {
-    question: "Puis-je demander une destination ou des dates précises ?",
-    answer: "Non, car nos agents traquent les baisses de prix imprévisibles. Cependant, sur notre page 'Offres en direct', vous avez la possibilité de filtrer les résultats par continent pour n'afficher que les offres qui correspondent à vos envies de voyage."
   },
   {
     question: "Proposez-vous des hôtels ou des séjours tout compris ?",
@@ -33,19 +37,15 @@ const faqData = [
   },
   {
     question: "Le paiement est-il sécurisé ?",
-    answer: "Oui, à 100 %. Nous utilisons Stripe, le leader mondial du paiement en ligne sécurisé. Vos données bancaires sont entièrement cryptées et nous n'y avons jamais accès."
+    answer: "Oui, à 100 %. Nous utilisons Stripe, le leader mondial du paiement en ligne sécurisé, que ce soit pour les abonnements ou la Conciergerie. Vos données bancaires sont entièrement cryptées et nous n'y avons jamais accès."
   },
   {
     question: "Je suis inscrit mais je ne reçois pas d'alertes, pourquoi ?",
     answer: "Les membres gratuits reçoivent un seul email par semaine. Si vous ne l'avez pas reçu, pensez à vérifier vos courriers indésirables (Spams) ou l'onglet 'Promotions' sur Gmail. Ajoutez hello@flyradar.fr à vos contacts pour être sûr de ne rien rater."
   },
   {
-    question: "Comment modifier mon aéroport de départ ?",
-    answer: "Pour le moment, il vous suffit de nous envoyer un simple message via le bouton de contact ci-dessous avec votre nouvelle ville de départ. Notre équipe mettra à jour votre profil. Un espace membre automatisé arrivera très prochainement !"
-  },
-  {
     question: "Comment me désinscrire ?",
-    answer: "Chaque email que nous envoyons contient un lien 'Se désinscrire' tout en bas. Un clic suffit pour arrêter immédiatement la surveillance de nos agents."
+    answer: "Chaque email que nous envoyons contient un lien 'Se désinscrire' tout en bas. Un clic suffit pour arrêter immédiatement la surveillance de nos alertes automatiques."
   }
 ];
 
@@ -128,7 +128,7 @@ export default function Aide() {
             <Mail className="text-amber-400 mb-4" size={40} />
             <h2 className="text-2xl md:text-3xl font-black mb-3">Vous n'avez pas trouvé votre réponse ?</h2>
             <p className="text-slate-300 mb-8 max-w-md font-medium text-sm md:text-base">
-              Notre équipe est disponible pour mettre à jour votre profil ou répondre à vos questions concernant l'abonnement Gold.
+              Notre équipe est disponible pour mettre à jour votre profil ou répondre à vos questions concernant l'abonnement Gold ou la Conciergerie.
             </p>
             <button 
               onClick={() => navigate('/contact')}
