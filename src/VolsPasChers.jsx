@@ -315,6 +315,17 @@ export default function VolsPasChers() {
         
         {/* BOUTONS DE DROITE */}
         <div className="flex items-center gap-3 lg:gap-6 shrink-0">
+          
+          {/* 🛎️ NOUVEAU BOUTON CONCIERGERIE */}
+          <button
+            onClick={() => navigate('/conciergerie')}
+            className="flex items-center gap-1.5 bg-blue-50 border border-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white px-3 py-1.5 md:py-2 rounded-full text-[10px] md:text-[11px] font-black uppercase tracking-[0.15em] transition-all shadow-sm whitespace-nowrap group"
+          >
+            <Target size={14} className="text-blue-500 group-hover:text-white transition-colors" />
+            <span className="hidden sm:inline">Conciergerie</span>
+            <span className="inline sm:hidden">Sniper</span>
+          </button>
+
           <button onClick={() => navigate('/aide')} className="hidden lg:flex items-center gap-1.5 text-[10px] font-black text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-[0.2em] border-b border-transparent hover:border-slate-200 pb-1">
             <HelpCircle size={14} className="text-slate-300" /> Aide
           </button>
