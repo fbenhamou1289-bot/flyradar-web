@@ -162,6 +162,10 @@ export default function Conciergerie() {
   const [suggestionsOrigine, setSuggestionsOrigine] = useState([]);
   const [suggestionsDest, setSuggestionsDest] = useState([]);
 
+  // UX Pro : Suivi si la sélection est valide depuis la liste
+  const [isValidOrigine, setIsValidOrigine] = useState(false);
+  const [isValidDest, setIsValidDest] = useState(false);
+
   useEffect(() => {
     async function chargerConfig() {
       const { data } = await supabase.from('destinations_config').select('*');
@@ -198,6 +202,8 @@ export default function Conciergerie() {
 
   const gererSaisieOrigine = (val) => {
     setFormData({...formData, origine: val});
+    setIsValidOrigine(false); // Dès qu'il tape, on annule la validité
+    
     if (val.length > 1) {
       const filtres = DESTINATIONS_LIST.filter(d => 
         d.ville.toLowerCase().includes(val.toLowerCase()) || 
@@ -211,6 +217,8 @@ export default function Conciergerie() {
 
   const gererSaisieDest = (val) => {
     setFormData({...formData, destination: val});
+    setIsValidDest(false); // Dès qu'il tape, on annule la validité
+    
     if (val.length > 1) {
       const filtres = DESTINATIONS_LIST.filter(d => 
         d.ville.toLowerCase().includes(val.toLowerCase()) || 
@@ -227,22 +235,20 @@ export default function Conciergerie() {
     const provisionBagage = aBagage ? 120 : 0; 
     const budgetRestantParPers = (budgetTotal / passagers) - fraisFlyRadar - provisionBagage;
     
-    // 1. On vérifie d'abord la base de données (priorité)
     let prixMiniRequis = seuils[destCode];
     
-    // 2. Si pas dans Supabase, on cherche dans notre super-liste locale
     if (!prixMiniRequis) {
         const destLocale = DESTINATIONS_LIST.find(d => d.code === destCode);
         if (destLocale && destLocale.budget_mini) {
             prixMiniRequis = destLocale.budget_mini;
         } else {
-            // 3. Fallback générique si le client tape un truc qu'on n'a vraiment nulle part
-            prixMiniRequis = 150; // Plus logique que 50€ pour un aéroport lointain inconnu
+            prixMiniRequis = 150; 
         }
     }
     
     if (budgetRestantParPers < prixMiniRequis) {
-        return `Budget trop faible. Après déduction de nos frais et du bagage (si inclus), il reste ${Math.floor(budgetRestantParPers)}€ par passager pour le vol. Le minimum estimé pour cette destination est d'environ ${prixMiniRequis}€.`;
+        const totalRequis = Math.ceil((prixMiniRequis + fraisFlyRadar + provisionBagage) * passagers);
+        return `🚨 Budget trop faible. Pour que la recherche soit réaliste, le budget total minimum doit être d'au moins ${totalRequis}€ (couvrant le vol estimé à ${prixMiniRequis}€/pers + nos frais${aBagage ? ' + les bagages' : ''}).`;
     }
     return null;
   };
@@ -250,8 +256,15 @@ export default function Conciergerie() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
+    
+    if (!isValidOrigine || !isValidDest) {
+        setErrorMessage("Veuillez sélectionner le départ et l'arrivée depuis la liste proposée.");
+        return;
+    }
+    
     const codeOrigine = extraireIATA(formData.origine);
     const codeDest = extraireIATA(formData.destination);
+    
     const erreur = validerMission(codeDest, parseInt(formData.budget_max), formData.passagers, formData.bagage_soute);
     if (erreur) { setErrorMessage(erreur); return; }
 
@@ -409,12 +422,17 @@ export default function Conciergerie() {
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Départ</label>
                   <div className="relative">
                     <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                    <input type="text" autoComplete="off" value={formData.origine} onChange={(e) => gererSaisieOrigine(e.target.value)} required placeholder="Ex: Paris" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold focus:bg-white outline-none" />
+                    <input type="text" autoComplete="off" value={formData.origine} onChange={(e) => gererSaisieOrigine(e.target.value)} required placeholder="Ex: Paris" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-10 text-sm font-bold focus:bg-white outline-none" />
+                    {isValidOrigine && <Check size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-green-500" />}
                   </div>
                   {suggestionsOrigine.length > 0 && (
                     <div className="absolute z-50 w-full bg-white border border-slate-200 rounded-xl mt-1 shadow-xl overflow-hidden">
                       {suggestionsOrigine.map((s, i) => (
-                        <div key={i} onClick={() => { setFormData({...formData, origine: `${s.ville} (${s.code})`}); setSuggestionsOrigine([]); }} className="p-3 text-sm hover:bg-slate-50 cursor-pointer font-bold border-b border-slate-50 last:border-0">{s.ville} <span className="text-blue-600">({s.code})</span></div>
+                        <div key={i} onClick={() => { 
+                            setFormData({...formData, origine: `${s.ville} (${s.code})`}); 
+                            setSuggestionsOrigine([]);
+                            setIsValidOrigine(true);
+                        }} className="p-3 text-sm hover:bg-slate-50 cursor-pointer font-bold border-b border-slate-50 last:border-0">{s.ville} <span className="text-blue-600">({s.code})</span></div>
                       ))}
                     </div>
                   )}
@@ -423,12 +441,17 @@ export default function Conciergerie() {
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Arrivée</label>
                   <div className="relative">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                    <input type="text" autoComplete="off" value={formData.destination} onChange={(e) => gererSaisieDest(e.target.value)} required placeholder="Ex: Cap Vert" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold focus:bg-white outline-none" />
+                    <input type="text" autoComplete="off" value={formData.destination} onChange={(e) => gererSaisieDest(e.target.value)} required placeholder="Ex: Cap Vert" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-10 text-sm font-bold focus:bg-white outline-none" />
+                    {isValidDest && <Check size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-green-500" />}
                   </div>
                   {suggestionsDest.length > 0 && (
                     <div className="absolute z-50 w-full bg-white border border-slate-200 rounded-xl mt-1 shadow-xl overflow-hidden">
                       {suggestionsDest.map((s, i) => (
-                        <div key={i} onClick={() => { setFormData({...formData, destination: `${s.ville} (${s.code})`}); setSuggestionsDest([]); }} className="p-3 text-sm hover:bg-slate-50 cursor-pointer font-bold border-b border-slate-50 last:border-0">{s.ville} <span className="text-blue-600">({s.code})</span></div>
+                        <div key={i} onClick={() => { 
+                            setFormData({...formData, destination: `${s.ville} (${s.code})`}); 
+                            setSuggestionsDest([]);
+                            setIsValidDest(true);
+                        }} className="p-3 text-sm hover:bg-slate-50 cursor-pointer font-bold border-b border-slate-50 last:border-0">{s.ville} <span className="text-blue-600">({s.code})</span></div>
                       ))}
                     </div>
                   )}
