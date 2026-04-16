@@ -609,27 +609,30 @@ export default function VolsPasChers() {
         </div>
       )}
 
-      {/* MODALE VIP ALERTES */}
+      {/* MODALE VIP ALERTES CORRIGÉE */}
       {showVipModal && (
         <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
-          <div className="bg-white rounded-[2.5rem] w-full max-w-md overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300">
+          <div className="bg-white rounded-[2.5rem] w-full max-w-md overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
             <button 
               onClick={() => setShowVipModal(false)}
-              className="absolute top-5 right-5 p-2 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors z-10"
+              className="absolute top-5 right-5 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors z-20 backdrop-blur-sm"
             >
-              <X size={20} className="text-slate-600" />
+              <X size={20} className="text-white" />
             </button>
-            <div className="bg-slate-900 p-8 text-center relative overflow-hidden">
+            
+            <div className="bg-slate-900 p-8 text-center relative shrink-0">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500"></div>
               <Crown size={32} className="text-amber-400 mx-auto mb-3" />
               <h2 className="text-2xl font-black text-white mb-1 tracking-tight">Centre de Contrôle</h2>
               <p className="text-amber-200/80 text-sm font-medium">Gérez vos alertes aéroports en illimité</p>
             </div>
-            <div className="p-8">
-              <p className="text-slate-600 text-sm mb-7 text-center font-medium leading-relaxed px-2">
+            
+            <div className="p-6 md:p-8 overflow-y-auto flex-1 custom-scrollbar flex flex-col">
+              <p className="text-slate-600 text-sm mb-7 text-center font-medium leading-relaxed px-2 shrink-0">
                 Cochez les aéroports pour lesquels vous souhaitez recevoir des alertes d'erreurs de prix en temps réel.
               </p>
-              <div className="space-y-3 max-h-72 overflow-y-auto pr-2 custom-scrollbar">
+              
+              <div className="space-y-3 mb-6 shrink-0">
                 {availableAirports.map((airport) => (
                   <label 
                     key={airport.id} 
@@ -654,9 +657,10 @@ export default function VolsPasChers() {
                   </label>
                 ))}
               </div>
+              
               <button 
                 onClick={saveVipAlerts}
-                className="w-full mt-7 bg-amber-500 text-white font-black py-4.5 rounded-xl shadow-lg shadow-amber-500/30 hover:bg-amber-400 transition-colors uppercase tracking-widest text-xs"
+                className="w-full mt-auto shrink-0 bg-amber-500 text-white font-black py-4.5 rounded-xl shadow-lg shadow-amber-500/30 hover:bg-amber-400 transition-colors uppercase tracking-widest text-xs"
               >
                 Sauvegarder mes alertes
               </button>
