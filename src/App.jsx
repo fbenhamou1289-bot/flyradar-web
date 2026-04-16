@@ -12,7 +12,7 @@ import CGV from './CGV';
 import Desabonnement from './Desabonnement';
 import MentionsLegales from './MentionsLegales';
 import PolitiqueConfidentialite from './PolitiqueConfidentialite';
-import { Target, ArrowRight, MapPin, Radar, Server, Zap, Crown, Check, Star, AlertCircle, CheckCircle2, User, HelpCircle } from 'lucide-react';
+import { Target, ArrowRight, MapPin, Radar, Server, Zap, Crown, Check, Star, AlertCircle, CheckCircle2, User, HelpCircle, Crosshair, Gift } from 'lucide-react';
 import VolsPasChers, { supabase } from './VolsPasChers';
 
 // --- LES OFFRES FICTIVES (FOMO) QUI TOURNENT TOUS LES JOURS ---
@@ -256,6 +256,10 @@ function Accueil() {
         {/* --- LE GROUPE DE BOUTONS --- */}
         <div className="flex items-center gap-3 lg:gap-6 w-full md:w-auto justify-end overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
           
+          <button onClick={() => navigate('/conciergerie')} className="flex items-center gap-1.5 text-[10px] font-black text-blue-600 hover:text-blue-800 transition-colors uppercase tracking-[0.1em] md:tracking-[0.2em] whitespace-nowrap">
+            <Crosshair size={14} /> Conciergerie
+          </button>
+          
           <button onClick={() => navigate('/aide')} className="flex items-center gap-1.5 text-[10px] font-black text-slate-500 hover:text-slate-700 transition-colors uppercase tracking-[0.1em] md:tracking-[0.2em] whitespace-nowrap">
             <HelpCircle size={14} className="text-slate-400" /> Aide
           </button>
@@ -427,7 +431,7 @@ function Accueil() {
                   <li className="flex gap-3"><Check className="text-amber-500 shrink-0" /> Alertes illimitées</li>
                   <li className="flex gap-3 text-white"><Check className="text-green-500 shrink-0" /> Remises jusqu'à 90%</li>
                   <li className="flex gap-3 text-amber-400 bg-amber-500/10 p-3 rounded-xl border border-amber-500/20">
-                    <Crown className="shrink-0 mt-0.5" size={16} /> 
+                    <Gift className="shrink-0 mt-0.5" size={16} /> 
                     <span>Frais d'activation Conciergerie (9,90€) <b>OFFERTS</b> chaque mois</span>
                   </li>
                 </ul>
@@ -438,17 +442,18 @@ function Accueil() {
             </div>
 
             {/* 3. CONCIERGERIE */}
-            <div className="bg-white rounded-[2rem] p-8 md:p-10 flex flex-col text-left text-slate-900 border-4 border-transparent hover:border-blue-50 transition-colors">
-              <h3 className="text-2xl font-black mb-2 text-slate-900 flex items-center gap-2">Conciergerie <Target size={20} className="text-blue-600" /></h3>
-              <p className="text-slate-500 text-sm mb-8">Recherche sur-mesure (Agent Sniper).</p>
-              <div className="mb-8 font-black text-5xl">9,90€<span className="text-slate-400 text-lg">/traque</span></div>
-              <ul className="space-y-4 mb-auto text-sm font-semibold">
+            <div className="bg-white rounded-[2rem] p-8 md:p-10 flex flex-col text-left text-slate-900 border-4 border-transparent hover:border-blue-50 transition-colors overflow-hidden relative">
+              <div className="absolute top-0 right-0 p-4 opacity-5"><Crosshair size={120} /></div>
+              <h3 className="text-2xl font-black mb-2 text-slate-900 flex items-center gap-2 relative z-10">Conciergerie <Target size={20} className="text-blue-600" /></h3>
+              <p className="text-slate-500 text-sm mb-8 relative z-10">Recherche sur-mesure (Agent Sniper).</p>
+              <div className="mb-8 font-black text-5xl relative z-10">9,90€<span className="text-slate-400 text-lg">/traque</span></div>
+              <ul className="space-y-4 mb-auto text-sm font-semibold relative z-10">
                 <li className="flex gap-3"><Check className="text-blue-600 shrink-0" /> Vos dates & votre destination</li>
                 <li className="flex gap-3"><Check className="text-blue-600 shrink-0" /> Surveillance continue 72h</li>
-                <li className="flex gap-3"><Zap className="text-blue-600 shrink-0" /> <span className="text-slate-700">Le vol trouvé sera <b>strictement inférieur</b> à votre budget max (nos frais déduits) = économie certaine !</span></li>
+                <li className="flex gap-3"><Zap className="text-blue-600 shrink-0 mt-1" size={24} /> <span className="text-slate-700">Le vol trouvé sera <b>strictement inférieur</b> à votre budget max (nos frais déduits) = économie certaine !</span></li>
                 <li className="flex gap-3 text-slate-500 italic font-medium"><AlertCircle className="shrink-0" size={16} /> Frais de succès : +29€ (uniquement si vol trouvé)</li>
               </ul>
-              <button onClick={() => navigate('/conciergerie')} className="mt-10 bg-blue-600 py-4 rounded-xl font-black uppercase text-xs tracking-widest text-white hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20">
+              <button onClick={() => navigate('/conciergerie')} className="mt-10 bg-blue-600 py-4 rounded-xl font-black uppercase text-xs tracking-widest text-white hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 relative z-10">
                 Lancer la traque <ArrowRight size={16} />
               </button>
             </div>
