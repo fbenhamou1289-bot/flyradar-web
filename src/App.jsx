@@ -256,8 +256,14 @@ function Accueil() {
         {/* --- LE GROUPE DE BOUTONS --- */}
         <div className="flex items-center gap-3 lg:gap-6 w-full md:w-auto justify-end overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
           
-          <button onClick={() => navigate('/conciergerie')} className="flex items-center gap-1.5 text-[10px] font-black text-blue-600 hover:text-blue-800 transition-colors uppercase tracking-[0.1em] md:tracking-[0.2em] whitespace-nowrap">
-            <Crosshair size={14} /> Conciergerie
+          {/* 🛎️ NOUVEAU BOUTON CONCIERGERIE IDENTIQUE A VOLS PAS CHERS */}
+          <button
+            onClick={() => navigate('/conciergerie')}
+            className="flex items-center gap-1.5 bg-blue-50 border border-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white px-3 py-1.5 md:py-2 rounded-full text-[10px] md:text-[11px] font-black uppercase tracking-[0.15em] transition-all shadow-sm whitespace-nowrap group"
+          >
+            <Target size={14} className="text-blue-500 group-hover:text-white transition-colors" />
+            <span className="hidden sm:inline">Conciergerie</span>
+            <span className="inline sm:hidden">Sniper</span>
           </button>
           
           <button onClick={() => navigate('/aide')} className="flex items-center gap-1.5 text-[10px] font-black text-slate-500 hover:text-slate-700 transition-colors uppercase tracking-[0.1em] md:tracking-[0.2em] whitespace-nowrap">
