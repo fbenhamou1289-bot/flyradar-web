@@ -161,7 +161,8 @@ export default function VolsPasChers() {
           setIsAuthenticated(false);
         }
 
-        const { data, error } = await supabase.from('Flights').select('*');
+        // 🚨 LE FIX EST ICI : On ne télécharge QUE les vols valides ! Plus de mélange avec les expirés.
+        const { data, error } = await supabase.from('Flights').select('*').eq('is_expired', false);
         if (error) throw error;
         
         const grouped = data.reduce((acc, flight) => {
@@ -221,7 +222,7 @@ export default function VolsPasChers() {
             ageInHours: ageInHours,
             isTimeLocked: isTimeLocked, 
             isGold: type === 'rare',
-            fullAirlineName: AIRLINE_MAP[d.airline] || (d.airline !== 'N/A' ? d.airline : 'Vol Confirmé'), // Fallback Propre
+            fullAirlineName: AIRLINE_MAP[d.airline] || (d.airline !== 'N/A' ? d.airline : 'Vol Confirmé'), 
             count_dates: d.all_flights.length 
           };
         });
@@ -233,10 +234,7 @@ export default function VolsPasChers() {
           setLastUpdateTxt(displayDiff > 0 ? `Vérifié il y a ${displayDiff} min` : 'Vérifié à l\'instant');
         }
 
-        setActiveDeals(formatted
-          .filter(d => !d.is_expired) 
-          .sort((a, b) => b.deal_score - a.deal_score)
-        );
+        setActiveDeals(formatted.sort((a, b) => b.deal_score - a.deal_score));
 
       } catch (err) { console.error(err); } finally { setIsLoading(false); }
     }
@@ -260,7 +258,7 @@ export default function VolsPasChers() {
   };
 
   const getBadgeLabel = (type, isBiz) => {
-    if (isBiz) return 'BUSINESS CLASS'; // Sans emoji
+    if (isBiz) return 'BUSINESS CLASS'; 
     if (type === 'rare') return 'Erreur de Prix';
     if (type === 'super') return 'Super Deal';
     return 'Bon Plan';
@@ -294,9 +292,7 @@ export default function VolsPasChers() {
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] font-sans antialiased text-slate-900 overflow-x-hidden">
-      
       <header className="fixed top-0 left-0 right-0 h-20 px-4 md:px-8 flex items-center justify-between z-50 bg-white/90 backdrop-blur-xl border-b border-slate-100">
-        
         <div className="flex items-center gap-4 shrink-0">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
             <Target className="text-blue-600" size={24} strokeWidth={2.5} />
@@ -304,7 +300,6 @@ export default function VolsPasChers() {
               <span className="font-bold">Fly</span><span className="font-bold text-blue-600">Radar</span>
             </span>
           </div>
-          
           <div className="hidden md:flex items-center gap-2">
             <div className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -313,9 +308,7 @@ export default function VolsPasChers() {
             <span className="text-[10px] font-bold uppercase tracking-widest text-green-600">Live</span>
           </div>
         </div>
-        
         <div className="flex items-center gap-3 lg:gap-6 shrink-0">
-          
           <button
             onClick={() => navigate('/conciergerie')}
             className="flex items-center gap-1.5 bg-blue-50 border border-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white px-3 py-1.5 md:py-2 rounded-full text-[10px] md:text-[11px] font-black uppercase tracking-[0.15em] transition-all shadow-sm whitespace-nowrap group"
@@ -324,18 +317,15 @@ export default function VolsPasChers() {
             <span className="hidden sm:inline">Conciergerie</span>
             <span className="inline sm:hidden">Sniper</span>
           </button>
-
           <button onClick={() => navigate('/aide')} className="hidden lg:flex items-center gap-1.5 text-[10px] font-black text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-[0.2em] border-b border-transparent hover:border-slate-200 pb-1">
             <HelpCircle size={14} className="text-slate-300" /> Aide
           </button>
-
           <button 
             onClick={handleLogout} 
             className="text-[10px] font-black text-slate-400 hover:text-red-500 transition-colors uppercase tracking-[0.2em] border-b border-transparent hover:border-red-200 pb-1 whitespace-nowrap"
           >
             {isGoldUser ? "Déconnexion" : "Quitter"}
           </button>
-          
           {!isGoldUser ? (
             <button 
               onClick={() => navigate('/inscription-gold')} 
@@ -364,7 +354,6 @@ export default function VolsPasChers() {
               <option value="PAR">Paris</option><option value="LYS">Lyon</option><option value="NCE">Nice</option><option value="MRS">Marseille</option><option value="TLS">Toulouse</option><option value="BOD">Bordeaux</option><option value="GVA">Genève</option><option value="BRU">Bruxelles</option>
             </select>
           </div>
-          
           <div>
             <label className="text-[10px] font-bold text-slate-900 mb-4 block uppercase tracking-widest">Région</label>
             <select value={activeRegion} onChange={(e) => setActiveRegion(e.target.value)} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs font-bold outline-none focus:border-blue-500">
@@ -372,12 +361,10 @@ export default function VolsPasChers() {
               <option value="asie">Asie & Océanie</option><option value="ameriques">Amériques</option><option value="afrique">Afrique & Océan Indien</option><option value="europe_sud">Europe du Sud</option><option value="europe_nord">Europe du Nord</option>
             </select>
           </div>
-
           <div>
              <div className="flex justify-between mb-4"><label className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Budget Max</label><span className="text-blue-600 font-black text-sm">{budget}€</span></div>
              <input type="range" min="100" max="2000" step="50" value={budget} onChange={(e) => setBudget(Number(e.target.value))} className="w-full h-1 bg-slate-100 rounded-lg appearance-none accent-blue-600 cursor-pointer" />
           </div>
-
           <div>
             <label className="text-[10px] font-bold text-slate-900 mb-6 block uppercase tracking-widest">Deal</label>
             <div className="space-y-5">
@@ -397,11 +384,9 @@ export default function VolsPasChers() {
 
       <main className="flex-1 lg:ml-80 mt-20 p-6 md:p-16">
         <div className="max-w-6xl mx-auto">
-          
           <div className="mb-12 text-left">
             <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight mb-4">Les dernières <span className="text-blue-600">pépites</span> détectées par nos agents.</h1>
             <div className="flex items-center gap-2 text-green-600 font-bold text-[10px] uppercase tracking-[0.2em] mb-8">{lastUpdateTxt}</div>
-            
             <div className="relative max-w-xl">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
               <input 
@@ -429,7 +414,6 @@ export default function VolsPasChers() {
                 const isRareLocked = deal.dealType === 'rare' && !isGoldUser; 
                 const isTimeLocked = deal.isTimeLocked && !isGoldUser;
                 const isLocked = isRareLocked || isTimeLocked;
-                
                 const isSingleDate = deal.count_dates === 1;
                 const singleFlight = deal.all_flights[0];
 
@@ -438,8 +422,6 @@ export default function VolsPasChers() {
                     
                     {isLocked && (
                       <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 text-center">
-                        
-                        {/* 🎯 NOUVEAU FOMO BUSINESS CLASS */}
                         {deal.isBusiness ? (
                           <div className="border-[3px] border-amber-400 text-amber-400 font-black text-2xl px-5 py-1.5 rotate-[-12deg] uppercase rounded-xl bg-slate-950 shadow-2xl mb-5 tracking-widest">BUSINESS</div>
                         ) : isRareLocked ? (
@@ -449,7 +431,6 @@ export default function VolsPasChers() {
                             Dispo dans<br/>{Math.max(1, Math.ceil(4 - deal.ageInHours))}H
                           </div>
                         )}
-                        
                         <button onClick={() => navigate('/inscription-gold')} className="bg-amber-500 hover:bg-amber-400 text-white font-black px-6 py-3.5 rounded-xl flex items-center gap-2 text-xs shadow-xl uppercase tracking-widest transition-transform hover:scale-105 active:scale-95">
                           <Crown size={18} /> Débloquer
                         </button>
@@ -607,7 +588,6 @@ export default function VolsPasChers() {
         </div>
       )}
 
-      {/* MODALE VIP ALERTES CORRIGÉE */}
       {showVipModal && (
         <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
           <div className="bg-white rounded-[2.5rem] w-full max-w-md overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
@@ -617,19 +597,16 @@ export default function VolsPasChers() {
             >
               <X size={20} className="text-white" />
             </button>
-            
             <div className="bg-slate-900 p-8 text-center relative shrink-0">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500"></div>
               <Crown size={32} className="text-amber-400 mx-auto mb-3" />
               <h2 className="text-2xl font-black text-white mb-1 tracking-tight">Centre de Contrôle</h2>
               <p className="text-amber-200/80 text-sm font-medium">Gérez vos alertes aéroports en illimité</p>
             </div>
-            
             <div className="p-6 md:p-8 overflow-y-auto flex-1 custom-scrollbar flex flex-col">
               <p className="text-slate-600 text-sm mb-7 text-center font-medium leading-relaxed px-2 shrink-0">
                 Cochez les aéroports pour lesquels vous souhaitez recevoir des alertes d'erreurs de prix en temps réel.
               </p>
-              
               <div className="space-y-3 mb-6 shrink-0">
                 {availableAirports.map((airport) => (
                   <label 
@@ -655,7 +632,6 @@ export default function VolsPasChers() {
                   </label>
                 ))}
               </div>
-              
               <button 
                 onClick={saveVipAlerts}
                 className="w-full mt-auto shrink-0 bg-amber-500 text-white font-black py-4.5 rounded-xl shadow-lg shadow-amber-500/30 hover:bg-amber-400 transition-colors uppercase tracking-widest text-xs"
@@ -667,7 +643,6 @@ export default function VolsPasChers() {
         </div>
       )}
       
-      {/* TOAST NOTIFICATION PREMIUM */}
       {showToast && (
         <div className="fixed top-24 right-4 md:right-8 z-[200] flex items-center gap-4 bg-slate-900 border border-amber-500/50 text-white px-5 py-4 rounded-2xl shadow-2xl animate-in slide-in-from-right duration-500">
           <div className="bg-amber-500 p-2 rounded-full shrink-0">
@@ -680,12 +655,9 @@ export default function VolsPasChers() {
         </div>
       )}
       
-      {/* --- MODALE FILTRES MOBILE (BOTTOM SHEET) --- */}
       {showMobileFilters && (
         <div className="fixed inset-0 z-[120] bg-slate-900/80 backdrop-blur-sm lg:hidden animate-in fade-in duration-300">
-          
           <div className="absolute bottom-0 left-0 right-0 w-full bg-white rounded-t-[2rem] flex flex-col shadow-2xl animate-in slide-in-from-bottom-8 duration-300" style={{ height: '85vh' }}>
-            
             <div className="bg-slate-50 p-6 text-center relative border-b border-slate-100 shrink-0 rounded-t-[2rem]">
               <button 
                 onClick={() => setShowMobileFilters(false)}
@@ -696,7 +668,6 @@ export default function VolsPasChers() {
               <Zap size={24} className="text-blue-600 mx-auto mb-2" />
               <h2 className="text-lg font-black text-slate-900 tracking-tight">Filtres du Radar</h2>
             </div>
-
             <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar pb-32">
               <div>
                 <label className="text-[10px] font-bold text-slate-900 mb-3 block uppercase tracking-widest">Aéroport de départ</label>
@@ -705,7 +676,6 @@ export default function VolsPasChers() {
                   <option value="PAR">Paris</option><option value="LYS">Lyon</option><option value="NCE">Nice</option><option value="MRS">Marseille</option><option value="TLS">Toulouse</option><option value="BOD">Bordeaux</option><option value="GVA">Genève</option><option value="BRU">Bruxelles</option>
                 </select>
               </div>
-              
               <div>
                 <label className="text-[10px] font-bold text-slate-900 mb-3 block uppercase tracking-widest">Région</label>
                 <select value={activeRegion} onChange={(e) => setActiveRegion(e.target.value)} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs font-bold outline-none focus:border-blue-500 appearance-none">
@@ -713,7 +683,6 @@ export default function VolsPasChers() {
                   <option value="asie">Asie & Océanie</option><option value="ameriques">Amériques</option><option value="afrique">Afrique & Océan Indien</option><option value="europe_sud">Europe du Sud</option><option value="europe_nord">Europe du Nord</option>
                 </select>
               </div>
-
               <div>
                  <div className="flex justify-between items-center mb-3">
                   <label className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Budget Max</label>
@@ -721,7 +690,6 @@ export default function VolsPasChers() {
                  </div>
                  <input type="range" min="100" max="2000" step="50" value={budget} onChange={(e) => setBudget(Number(e.target.value))} className="w-full h-2 bg-slate-100 rounded-lg appearance-none accent-blue-600 cursor-pointer" />
               </div>
-
               <div>
                 <label className="text-[10px] font-bold text-slate-900 mb-4 block uppercase tracking-widest">Type de Deal</label>
                 <div className="space-y-5">
@@ -737,7 +705,6 @@ export default function VolsPasChers() {
                 </div>
               </div>
             </div>
-
             <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-100 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)] z-10">
               <button 
                 onClick={() => setShowMobileFilters(false)}
@@ -746,7 +713,6 @@ export default function VolsPasChers() {
                 Appliquer les filtres
               </button>
             </div>
-
           </div>
         </div>
       )}
@@ -754,13 +720,10 @@ export default function VolsPasChers() {
       {redirectUrl && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
           <div className="w-full max-w-md bg-white rounded-[2.5rem] overflow-hidden flex flex-col relative shadow-2xl animate-in zoom-in-95 duration-300 p-8 text-center border border-slate-100">
-            
             <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
               <Plane size={36} className="ml-2" />
             </div>
-            
             <h2 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">Préparation au décollage !</h2>
-            
             <p className="text-slate-500 font-medium text-sm leading-relaxed mb-8">
               Vous allez être redirigé vers notre partenaire sécurisé pour finaliser votre réservation au meilleur prix.
               <br/><br/>
@@ -769,7 +732,6 @@ export default function VolsPasChers() {
                  Les prix de l'aérien étant très dynamiques, il arrive que la compagnie ait légèrement mis à jour son tarif depuis notre dernière détection !
               </span>
             </p>
-            
             <div className="flex flex-col gap-3">
               <button 
                 onClick={() => {
@@ -787,7 +749,6 @@ export default function VolsPasChers() {
                 Annuler
               </button>
             </div>
-
           </div>
         </div>
       )}
