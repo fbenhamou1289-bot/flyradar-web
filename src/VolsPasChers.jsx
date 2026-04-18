@@ -21,9 +21,9 @@ const AIRLINE_MAP = {
   'BF': 'French Bee', 'UU': 'Air Austral', 'SS': 'Corsair', 'TX': 'Air Caraïbes', 'DE': 'Condor', 
   'VR': 'Cabo Verde Airlines', 'TB': 'TUI fly Belgium', 'OR': 'TUI fly Netherlands', 'X3': 'TUI fly Deutschland', 'BY': 'TUI Airways UK',
   'VY': 'Vueling', 'U2': 'easyJet', 'FR': 'Ryanair', 'W6': 'Wizz Air', 'TO': 'Transavia', 'V7': 'Volotea', 
-  'N0': 'Norse Atlantic', 'MW': 'Malta Air (Ryanair)', 'RK': 'Ryanair UK', 'W4': 'Wizz Air Malta',
+  'N0': 'Norse Atlantic', 'MW': 'Malta Air (Ryanair)', 'RK': 'Ryanair UK', 'W4': 'Wizz Air Malta', 'W9': 'Wizz Air UK',
   'RR': 'Ryanair Sun (Buzz)', 'LW': 'Lauda Europe', 'UA': 'United Airlines', 'AA': 'American Airlines',
-  'F9': 'Frontier Airlines', 'NK': 'Spirit Airlines', 'HO': 'Juneyao Airlines', 'XK': 'Air Corsica'
+  'F9': 'Frontier Airlines', 'NK': 'Spirit Airlines', 'HO': 'Juneyao Airlines', 'XK': 'Air Corsica', 'LA': 'LATAM Airlines'
 };
 
 export default function VolsPasChers() {
@@ -43,10 +43,7 @@ export default function VolsPasChers() {
   const [showVipModal, setShowVipModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
   
-  // -- ÉTAT POUR MOBILE --
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-  
-  // -- ÉTAT POUR LA MODALE DE REDIRECTION --
   const [redirectUrl, setRedirectUrl] = useState(null);
   
   const [vipAirports, setVipAirports] = useState([]);
@@ -167,7 +164,6 @@ export default function VolsPasChers() {
         const { data, error } = await supabase.from('Flights').select('*');
         if (error) throw error;
         
-        // CORRECTION 1 : On groupe par Destination ET par Aéroport de départ
         const grouped = data.reduce((acc, flight) => {
           const key = `${flight.destination_code}_${flight.origine_code}`;
           if (!acc[key]) {
@@ -188,6 +184,8 @@ export default function VolsPasChers() {
               acc[key].deal_score = flight.deal_score;
               acc[key].image_url = flight.image_url || acc[key].image_url;
               acc[key].airline = flight.airline; 
+              acc[key].category = flight.category; 
+              acc[key].trip_type = flight.trip_type;
             }
           }
           return acc;
@@ -196,8 +194,10 @@ export default function VolsPasChers() {
         const formatted = Object.values(grouped).map(d => {
           const discountVal = Math.round(((d.average_price - d.price) / d.average_price) * 100);
           
+          const isBusiness = d.category === 'Business Class';
+          
           let type = 'good';
-          if (discountVal >= 50 || d.trip_class === 1) { 
+          if (discountVal >= 50 || isBusiness) { 
             type = 'rare'; 
           } else if (discountVal >= 25) { 
             type = 'super'; 
@@ -212,6 +212,7 @@ export default function VolsPasChers() {
 
           return {
             ...d,
+            isBusiness: isBusiness,
             destination: isLocked ? "Destination Secrète" : d.destination,
             price: isLocked ? "---" : d.price,
             image: isLocked ? "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80" : (d.image_url || 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'),
@@ -220,7 +221,7 @@ export default function VolsPasChers() {
             ageInHours: ageInHours,
             isTimeLocked: isTimeLocked, 
             isGold: type === 'rare',
-            fullAirlineName: AIRLINE_MAP[d.airline] || d.airline,
+            fullAirlineName: AIRLINE_MAP[d.airline] || (d.airline !== 'N/A' ? d.airline : 'Vol Confirmé'), // Fallback Propre
             count_dates: d.all_flights.length 
           };
         });
@@ -251,13 +252,15 @@ export default function VolsPasChers() {
     return matchesSearch && matchesDeparture && matchesRegion && matchesQuality && matchesBudget;
   });
 
-  const getBadgeStyle = (type) => {
+  const getBadgeStyle = (type, isBiz) => {
+    if (isBiz) return 'bg-slate-950 text-amber-400 border border-amber-500/30';
     if (type === 'rare') return 'bg-orange-600 text-white';
     if (type === 'super') return 'bg-green-600 text-white';
-    return 'bg-yellow-400 text-white';
+    return 'bg-yellow-400 text-slate-900';
   };
 
-  const getBadgeLabel = (type) => {
+  const getBadgeLabel = (type, isBiz) => {
+    if (isBiz) return 'BUSINESS CLASS'; // Sans emoji
     if (type === 'rare') return 'Erreur de Prix';
     if (type === 'super') return 'Super Deal';
     return 'Bon Plan';
@@ -292,10 +295,8 @@ export default function VolsPasChers() {
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] font-sans antialiased text-slate-900 overflow-x-hidden">
       
-      {/* HEADER CORRIGÉ */}
       <header className="fixed top-0 left-0 right-0 h-20 px-4 md:px-8 flex items-center justify-between z-50 bg-white/90 backdrop-blur-xl border-b border-slate-100">
         
-        {/* LOGO ET INDICATEUR LIVE (Harmonisé avec l'Accueil) */}
         <div className="flex items-center gap-4 shrink-0">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
             <Target className="text-blue-600" size={24} strokeWidth={2.5} />
@@ -313,10 +314,8 @@ export default function VolsPasChers() {
           </div>
         </div>
         
-        {/* BOUTONS DE DROITE */}
         <div className="flex items-center gap-3 lg:gap-6 shrink-0">
           
-          {/* 🛎️ NOUVEAU BOUTON CONCIERGERIE */}
           <button
             onClick={() => navigate('/conciergerie')}
             className="flex items-center gap-1.5 bg-blue-50 border border-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white px-3 py-1.5 md:py-2 rounded-full text-[10px] md:text-[11px] font-black uppercase tracking-[0.15em] transition-all shadow-sm whitespace-nowrap group"
@@ -355,7 +354,6 @@ export default function VolsPasChers() {
         </div>
       </header>
 
-      {/* SIDEBAR (Visible lg+) */}
       <aside className="w-80 fixed left-0 top-20 bottom-0 bg-white border-r border-slate-50 p-10 overflow-y-auto hidden lg:block z-40">
         <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-12">Filtres de recherche</h3>
         <div className="space-y-10">
@@ -397,7 +395,6 @@ export default function VolsPasChers() {
         </div>
       </aside>
 
-      {/* MAIN CONTENT */}
       <main className="flex-1 lg:ml-80 mt-20 p-6 md:p-16">
         <div className="max-w-6xl mx-auto">
           
@@ -417,7 +414,6 @@ export default function VolsPasChers() {
             </div>
           </div>
           
-          {/* BOUTON FILTRES MOBILE (Visible <lg) */}
           <div className="lg:hidden mb-10 flex justify-end">
             <button 
               onClick={() => setShowMobileFilters(true)}
@@ -427,7 +423,6 @@ export default function VolsPasChers() {
             </button>
           </div>
 
-          {/* AFFICHAGE DES DEALS OU MESSAGE VIDE */}
           {filteredDeals.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredDeals.map((deal) => {
@@ -435,7 +430,6 @@ export default function VolsPasChers() {
                 const isTimeLocked = deal.isTimeLocked && !isGoldUser;
                 const isLocked = isRareLocked || isTimeLocked;
                 
-                // CORRECTION 2 : Vérification du nombre de dates
                 const isSingleDate = deal.count_dates === 1;
                 const singleFlight = deal.all_flights[0];
 
@@ -445,7 +439,10 @@ export default function VolsPasChers() {
                     {isLocked && (
                       <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 text-center">
                         
-                        {isRareLocked ? (
+                        {/* 🎯 NOUVEAU FOMO BUSINESS CLASS */}
+                        {deal.isBusiness ? (
+                          <div className="border-[3px] border-amber-400 text-amber-400 font-black text-2xl px-5 py-1.5 rotate-[-12deg] uppercase rounded-xl bg-slate-950 shadow-2xl mb-5 tracking-widest">BUSINESS</div>
+                        ) : isRareLocked ? (
                           <div className="border-[3px] border-red-500 text-red-500 font-black text-2xl px-5 py-1.5 rotate-[-12deg] uppercase rounded-xl bg-white shadow-2xl mb-5">ERREUR</div>
                         ) : (
                           <div className="border-[3px] border-blue-500 text-blue-500 font-black text-xl px-5 py-1.5 rotate-[-5deg] uppercase rounded-xl bg-white shadow-2xl mb-5 text-center leading-tight">
@@ -461,8 +458,10 @@ export default function VolsPasChers() {
 
                     <div className={`flex flex-col h-full ${isLocked ? 'blur-md select-none opacity-40 grayscale-[30%]' : ''}`}>
                       <div className="relative h-48 overflow-hidden bg-slate-100 shrink-0">
-                        <div className={`absolute top-4 left-4 px-3 py-1.5 rounded-lg font-black text-[8px] uppercase tracking-widest shadow-md z-10 ${getBadgeStyle(deal.dealType)}`}>{getBadgeLabel(deal.dealType)}</div>
-                        <div className={`absolute top-4 right-4 px-3 py-1.5 rounded-lg font-black text-[10px] shadow-md z-10 ${getBadgeStyle(deal.dealType)}`}>-{deal.discount}%</div>
+                        <div className={`absolute top-4 left-4 px-3 py-1.5 rounded-lg font-black text-[8px] uppercase tracking-widest shadow-md z-10 flex items-center gap-1.5 ${getBadgeStyle(deal.dealType, deal.isBusiness)}`}>
+                          {getBadgeLabel(deal.dealType, deal.isBusiness)}
+                        </div>
+                        <div className={`absolute top-4 right-4 px-3 py-1.5 rounded-lg font-black text-[10px] shadow-md z-10 ${getBadgeStyle(deal.dealType, false)}`}>-{deal.discount}%</div>
                         
                         <img 
                           src={deal.image} 
@@ -492,7 +491,7 @@ export default function VolsPasChers() {
                             {isSingleDate && singleFlight ? (
                               singleFlight.return_date 
                                 ? `${new Date(singleFlight.dates).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} - ${new Date(singleFlight.return_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`
-                                : `${new Date(singleFlight.dates).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`
+                                : `Aller: ${new Date(singleFlight.dates).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`
                             ) : (
                               `${deal.count_dates} dates dispos`
                             )}
@@ -528,7 +527,6 @@ export default function VolsPasChers() {
               })}
             </div>
           ) : (
-            /* MESSAGE QUAND AUCUN VOL N'EST TROUVÉ */
             <div className="flex flex-col items-center justify-center bg-white rounded-[2rem] border border-slate-100 p-12 text-center shadow-sm w-full py-20 mt-4">
               <div className="w-24 h-24 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-6">
                 <Radar size={48} className="animate-[spin_4s_linear_infinite]" />
@@ -583,7 +581,7 @@ export default function VolsPasChers() {
                     </span>
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-2">
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 py-0.5 bg-slate-50 rounded-md whitespace-nowrap">
-                        {AIRLINE_MAP[flight.airline] || flight.airline} {(flight.stops > 0 && flight.stops !== null) ? '+ autres' : ''}
+                        {AIRLINE_MAP[flight.airline] || (flight.airline !== 'N/A' ? flight.airline : 'Vol Confirmé')} {(flight.stops > 0 && flight.stops !== null) ? '+ autres' : ''}
                       </span>
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">
                           {flight.stops === null ? '' : (flight.stops == 0 || flight.stops === '0' ? 'Vol Direct' : `${flight.stops} escale(s)`)}
@@ -686,10 +684,8 @@ export default function VolsPasChers() {
       {showMobileFilters && (
         <div className="fixed inset-0 z-[120] bg-slate-900/80 backdrop-blur-sm lg:hidden animate-in fade-in duration-300">
           
-          {/* Le "Tiroir" collé en bas (Bottom Sheet) */}
           <div className="absolute bottom-0 left-0 right-0 w-full bg-white rounded-t-[2rem] flex flex-col shadow-2xl animate-in slide-in-from-bottom-8 duration-300" style={{ height: '85vh' }}>
             
-            {/* Header (Fixé en haut du tiroir) */}
             <div className="bg-slate-50 p-6 text-center relative border-b border-slate-100 shrink-0 rounded-t-[2rem]">
               <button 
                 onClick={() => setShowMobileFilters(false)}
@@ -701,7 +697,6 @@ export default function VolsPasChers() {
               <h2 className="text-lg font-black text-slate-900 tracking-tight">Filtres du Radar</h2>
             </div>
 
-            {/* Contenu Scrollable */}
             <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar pb-32">
               <div>
                 <label className="text-[10px] font-bold text-slate-900 mb-3 block uppercase tracking-widest">Aéroport de départ</label>
@@ -743,7 +738,6 @@ export default function VolsPasChers() {
               </div>
             </div>
 
-            {/* Bouton Appliquer (Cloué en bas) */}
             <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-100 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)] z-10">
               <button 
                 onClick={() => setShowMobileFilters(false)}
@@ -757,7 +751,6 @@ export default function VolsPasChers() {
         </div>
       )}
 
-      {/* --- MODALE DE TRANSITION (DÉPART VERS AVIASALES) --- */}
       {redirectUrl && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
           <div className="w-full max-w-md bg-white rounded-[2.5rem] overflow-hidden flex flex-col relative shadow-2xl animate-in zoom-in-95 duration-300 p-8 text-center border border-slate-100">
