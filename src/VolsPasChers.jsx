@@ -23,7 +23,7 @@ const AIRLINE_MAP = {
   'VY': 'Vueling', 'U2': 'easyJet', 'FR': 'Ryanair', 'W6': 'Wizz Air', 'TO': 'Transavia', 'V7': 'Volotea', 
   'N0': 'Norse Atlantic', 'MW': 'Malta Air (Ryanair)', 'RK': 'Ryanair UK', 'W4': 'Wizz Air Malta', 'W9': 'Wizz Air UK',
   'RR': 'Ryanair Sun (Buzz)', 'LW': 'Lauda Europe', 'UA': 'United Airlines', 'AA': 'American Airlines',
-  'F9': 'Frontier Airlines', 'NK': 'Spirit Airlines', 'HO': 'Juneyao Airlines', 'XK': 'Air Corsica', 'LA': 'LATAM Airlines'
+  'F9': 'Frontier Airlines', 'NK': 'Spirit Airlines', 'HO': 'Juneyao Airlines', 'XK': 'Air Corsica', 'LA': 'LATAM Airlines', 'EC': 'Easyjet'
 };
 
 export default function VolsPasChers() {
